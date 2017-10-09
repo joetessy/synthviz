@@ -1,34 +1,8 @@
-window.synthView = synthView;
-document.addEventListener('DOMContentLoaded', function(){
-  synthView.start();
-});
+import makeSynth from './synth.js';
 
-function makeSynth(){
-  var context = new AudioContext();
+export const synthView = {
+  synth: makeSynth(),
 
-  return {
-    context,
-    activeVoices: {},
-    createVoice(n){
-      this.activeVoices[n] = this.context.createOscillator();
-      this.activeVoices[n].frequency.value = this.calculateFrequency(n);
-      this.activeVoices[n].connect(this.context.destination);
-      this.start(n);
-    },
-    start(n){
-      this.activeVoices[n].start();
-    },
-    stop(n){
-      this.activeVoices[n].stop(this.context.currentTime + 1);
-    },
-    calculateFrequency(n){
-      return Math.pow(2, (n-49)/12) * 440;
-    }
-  };
-}
-
-
-var synthView = {
   keys: {
     65: { n: 40 },
     87: { n: 41 },
@@ -47,8 +21,6 @@ var synthView = {
     76: { n: 54 },
     80: { n: 55 },
   },
-
-  synth: makeSynth(),
 
   start(){
     document.addEventListener('keydown', e => {
