@@ -78,42 +78,73 @@ const synthView = {
   synth: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__synth_js__["a" /* default */])(),
 
   keys: {
-    65: { n: 40 },
-    87: { n: 41 },
-    83: { n: 42 },
-    69: { n: 43 },
-    68: { n: 44 },
-    70: { n: 45 },
-    84: { n: 46 },
-    71: { n: 47 },
-    89: { n: 48 },
-    72: { n: 49 },
-    85: { n: 50 },
-    74: { n: 51 },
-    75: { n: 52 },
-    79: { n: 53 },
-    76: { n: 54 },
-    80: { n: 55 },
+    65: { down: false, n: 40 },
+    87: { down: false, n: 41 },
+    83: { down: false, n: 42 },
+    69: { down: false, n: 43 },
+    68: { down: false, n: 44 },
+    70: { down: false, n: 45 },
+    84: { down: false, n: 46 },
+    71: { down: false, n: 47 },
+    89: { down: false, n: 48 },
+    72: { down: false, n: 49 },
+    85: { down: false, n: 50 },
+    74: { down: false, n: 51 },
+    75: { down: false, n: 52 },
+    79: { down: false, n: 53 },
+    76: { down: false, n: 54 },
+    80: { down: false, n: 55 },
+    90: { down: false },
+    88: { down: false }
+  },
+
+  octave(direction){
+    let codes = Object.keys(this.keys);
+    for (let i = 0; i < codes.length; i++){
+      if (direction === 'up'){
+        this.keys[codes[i]].n += 12;
+      } else {
+        this.keys[codes[i]].n -= 12;
+      }
+    }
   },
 
   start(){
     document.addEventListener('keydown', e => {
+      let key = e.keyCode;
+
+      if (this.keys[key].down) return;
+      this.keys[key].down = true;
+
+      // Change Octave
+      if (key === 90){
+        this.octave('down');
+        return;
+      } else if (key === 88){
+        this.octave('up');
+        return;
+      }
+
+
       if (this.keys[e.keyCode]) {
-        let key = e.keyCode;
         let n = this.keys[key].n;
         this.synth.createVoice(n);
       }
+
     });
 
     document.addEventListener('keyup', e => {
       if (this.keys[e.keyCode]) {
         let key = e.keyCode;
+        this.keys[key].down = false;
+        if (key === 90 || key === 88){
+          return;
+        }
+
         let n = this.keys[key].n;
-        this.synth.activeVoices[n].stop();
-        delete this.synth.activeVoices[n];
+        this.synth.stop(n);
       }
     });
-
   },
 };
 /* harmony export (immutable) */ __webpack_exports__["a"] = synthView;
@@ -126,6 +157,9 @@ const synthView = {
 
 "use strict";
 /* harmony export (immutable) */ __webpack_exports__["a"] = makeSynth;
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__voice_js__ = __webpack_require__(3);
+
+
 function makeSynth(){
   var context = new AudioContext();
 
@@ -133,16 +167,24 @@ function makeSynth(){
     context,
     activeVoices: {},
     createVoice(n){
-      this.activeVoices[n] = this.context.createOscillator();
-      this.activeVoices[n].frequency.value = this.calculateFrequency(n);
-      this.activeVoices[n].connect(this.context.destination);
+      let frequency = this.calculateFrequency(n);
+      this.activeVoices[n] = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__voice_js__["a" /* makeVoice */])({context, frequency});
+      this.activeVoices[n].setFrequency();
+      this.activeVoices[n].connect();
       this.start(n);
     },
     start(n){
       this.activeVoices[n].start();
     },
     stop(n){
-      this.activeVoices[n].stop(this.context.currentTime + 1);
+      if (!this.activeVoices[n]) {
+        n += 12;
+        if (!this.activeVoices[n]){
+          n -= 24;
+        }
+      }
+      this.activeVoices[n].stop();
+      delete this.activeVoices[n];
     },
     calculateFrequency(n){
       return Math.pow(2, (n-49)/12) * 440;
@@ -164,6 +206,33 @@ window.synthView = __WEBPACK_IMPORTED_MODULE_0__synth_view_js__["a" /* synthView
 document.addEventListener('DOMContentLoaded', function(){
   __WEBPACK_IMPORTED_MODULE_0__synth_view_js__["a" /* synthView */].start();
 });
+
+
+/***/ }),
+/* 3 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (immutable) */ __webpack_exports__["a"] = makeVoice;
+function makeVoice({context, frequency}){
+  return {
+    frequency,
+    context,
+    oscillator: context.createOscillator(),
+    setFrequency(){
+      this.oscillator.frequency.value = this.frequency;
+    },
+    connect(){
+      this.oscillator.connect(this.context.destination);
+    },
+    start(){
+      this.oscillator.start();
+    },
+    stop(){
+      this.oscillator.stop();
+    }
+  };
+}
 
 
 /***/ })
