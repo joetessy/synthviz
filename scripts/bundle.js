@@ -121,7 +121,7 @@ const synthView = {
     });
     $(".sustain").knob({
         'release' : function (v) {
-          jQuery.event.trigger('setSustain', v / 100);
+          jQuery.event.trigger('setSustain', (v / 100 * .5));
         }
     });
     $(".release").knob({
@@ -171,7 +171,7 @@ const synthView = {
     }.bind(this));
 
     $(document).bind('setRelease', function (_, value) {
-      this.synth.envelope.release = value;
+      this.synth.envelope.release = value + .01;
     }.bind(this));
 
     this.synth.volume.connect(this.synth.context.destination);
@@ -204,7 +204,7 @@ function makeSynth(){
     activeVoices: {},
     destination: context.destination,
     volume,
-    envelope: {attack: 0, decay: 0, sustain: 1, release: 0},
+    envelope: {attack: 0, decay: 0, sustain: .5, release: .1},
     start(key){
       let n = key.n;
       let frequency = this.calculateFrequency(n);

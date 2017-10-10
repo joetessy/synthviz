@@ -47,7 +47,7 @@ export const synthView = {
     });
     $(".sustain").knob({
         'release' : function (v) {
-          jQuery.event.trigger('setSustain', v / 100);
+          jQuery.event.trigger('setSustain', (v / 100 * .5));
         }
     });
     $(".release").knob({
@@ -97,7 +97,7 @@ export const synthView = {
     }.bind(this));
 
     $(document).bind('setRelease', function (_, value) {
-      this.synth.envelope.release = value;
+      this.synth.envelope.release = value + .01;
     }.bind(this));
 
     this.synth.volume.connect(this.synth.context.destination);
