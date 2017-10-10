@@ -54,6 +54,10 @@ export const synthView = {
         let n = keyInfo.n;
         this.synth.stop(n);
       }
+
     });
+    // this.synth.envolope.connect(this.synth.volume.amplitude);
+    this.synth.volume.connect(this.synth.context.destination);
+
   },
 };

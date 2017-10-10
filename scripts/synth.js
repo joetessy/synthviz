@@ -1,19 +1,25 @@
 import { makeVoice } from './voice.js';
+import envelope from './envelope.js';
+import amp from './amp.js';
 
 export default function makeSynth(){
   var context = new AudioContext();
+  var volume = amp({context});
 
   return {
     context,
     activeVoices: {},
+    destination: context.destination,
+    envelope: envelope({context}),
+    volume,
     start(key){
       let n = key.n;
       let frequency = this.calculateFrequency(n);
-      this.activeVoices[n] = makeVoice({context, frequency});
-      this.activeVoices[n].setFrequency();
+      this.activeVoices[n] = makeVoice({context, frequency, volume});
       this.activeVoices[n].connect();
       this.activeVoices[n].start();
     },
+
     stop(n){
       if (!this.activeVoices[n]);
       n = this.handleOctaveChange(n);

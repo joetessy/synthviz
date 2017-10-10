@@ -1,0 +1,20 @@
+ body div h1 h2 h3 li ul section main {
+   font-family: inherit;
+   font-size: inherit;
+   margin: 0;
+   padding: 0;
+  list-style: none;
+ }
+
+body {
+  background-color: black;
+  color: #ff00f7;
+  font-family: sans-serif
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}

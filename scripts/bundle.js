@@ -128,7 +128,11 @@ const synthView = {
         let n = keyInfo.n;
         this.synth.stop(n);
       }
+
     });
+    // this.synth.envolope.connect(this.synth.volume.amplitude);
+    this.synth.volume.connect(this.synth.context.destination);
+
   },
 };
 /* harmony export (immutable) */ __webpack_exports__["a"] = synthView;
@@ -142,22 +146,30 @@ const synthView = {
 "use strict";
 /* harmony export (immutable) */ __webpack_exports__["a"] = makeSynth;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__voice_js__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__envelope_js__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__amp_js__ = __webpack_require__(4);
+
+
 
 
 function makeSynth(){
   var context = new AudioContext();
+  var volume = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__amp_js__["a" /* default */])({context});
 
   return {
     context,
     activeVoices: {},
+    destination: context.destination,
+    envelope: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__envelope_js__["a" /* default */])({context}),
+    volume,
     start(key){
       let n = key.n;
       let frequency = this.calculateFrequency(n);
-      this.activeVoices[n] = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__voice_js__["a" /* makeVoice */])({context, frequency});
-      this.activeVoices[n].setFrequency();
+      this.activeVoices[n] = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__voice_js__["a" /* makeVoice */])({context, frequency, volume});
       this.activeVoices[n].connect();
       this.activeVoices[n].start();
     },
+
     stop(n){
       if (!this.activeVoices[n]);
       n = this.handleOctaveChange(n);
@@ -196,7 +208,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 window.synthView = __WEBPACK_IMPORTED_MODULE_0__synth_view_js__["a" /* synthView */];
+window.synth = __WEBPACK_IMPORTED_MODULE_0__synth_view_js__["a" /* synthView */].synth;
 document.addEventListener('DOMContentLoaded', function(){
+  $(function() {
+      $(".dial").knob();
+  });
   __WEBPACK_IMPORTED_MODULE_0__synth_view_js__["a" /* synthView */].start();
 });
 
@@ -207,25 +223,110 @@ document.addEventListener('DOMContentLoaded', function(){
 
 "use strict";
 /* harmony export (immutable) */ __webpack_exports__["a"] = makeVoice;
-function makeVoice({context, frequency}){
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__oscillator_js__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__amp_js__ = __webpack_require__(4);
+
+
+
+
+function makeVoice({context, frequency, volume}){
   return {
     frequency,
     context,
-    oscillator: context.createOscillator(),
-    setFrequency(){
-      this.oscillator.frequency.value = this.frequency;
-    },
+    oscillator: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__oscillator_js__["a" /* default */])({context, frequency}),
+    amp: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__amp_js__["a" /* default */])({context}),
     connect(){
-      this.gain = this.context.createGain();
-      this.gain.gain.value = 0.3;
-      this.oscillator.connect(this.gain);
-      this.gain.connect(this.context.destination);
+      this.oscillator.connect(this.amp);
+      this.amp.connect(volume);
     },
     start(){
       this.oscillator.start();
     },
     stop(){
-      this.gain.gain.value = 0;
+      this.amp.amplitude.value = 0;
+    }
+  };
+}
+
+
+/***/ }),
+/* 4 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (immutable) */ __webpack_exports__["a"] = makeAmp;
+function makeAmp({context}){
+  let gain = context.createGain();
+  let input = gain,
+      output = gain,
+      amplitude = gain.gain;
+  gain.gain.value = 0.5;
+  return {
+    gain,
+    input,
+    output,
+    amplitude,
+    connect(node){
+      if (node.hasOwnProperty('input')) {
+        this.output.connect(node.input);
+      } else {
+        this.output.connect(node);
+      }
+    }
+  };
+}
+
+
+/***/ }),
+/* 5 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (immutable) */ __webpack_exports__["a"] = makeOscillator;
+function makeOscillator({context, frequency}){
+  var oscillator = context.createOscillator();
+  let input = oscillator,
+      output = oscillator;
+  return {
+    oscillator,
+    frequency,
+    start(){
+      oscillator.frequency.value = this.frequency;
+      oscillator.start();
+    },
+    input,
+    output,
+    connect(node){
+      if (node.hasOwnProperty('input')) {
+        output.connect(node.input);
+      } else {
+        output.connect(node);
+      }
+    }
+  };
+}
+
+
+/***/ }),
+/* 6 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (immutable) */ __webpack_exports__["a"] = makeEnvelope;
+function makeEnvelope({context}){
+  return {
+    attackTime: 0.1,
+    releaseTime: 0.1,
+    trigger(){
+      let now = context.currentTime;
+      this.param.cancleSchduledValues(now);
+      this.param.setValueAtTime(0, now);
+      this.param.linearRampToValueAtTime(1, now + this.attackTime);
+      this.param.linearRampToValueAtTime(0, now +
+        this.attackTime + this.releaseTime);
+    },
+    connect(param){
+      this.param = param;
     }
   };
 }

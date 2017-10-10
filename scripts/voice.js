@@ -1,22 +1,22 @@
-export function makeVoice({context, frequency}){
+import oscillator from './oscillator.js';
+import amp from './amp.js';
+
+
+export function makeVoice({context, frequency, volume}){
   return {
     frequency,
     context,
-    oscillator: context.createOscillator(),
-    setFrequency(){
-      this.oscillator.frequency.value = this.frequency;
-    },
+    oscillator: oscillator({context, frequency}),
+    amp: amp({context}),
     connect(){
-      this.gain = this.context.createGain();
-      this.gain.gain.value = 0.3;
-      this.oscillator.connect(this.gain);
-      this.gain.connect(this.context.destination);
+      this.oscillator.connect(this.amp);
+      this.amp.connect(volume);
     },
     start(){
       this.oscillator.start();
     },
     stop(){
-      this.gain.gain.value = 0;
+      this.amp.amplitude.value = 0;
     }
   };
 }
