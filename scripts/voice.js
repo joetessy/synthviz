@@ -1,5 +1,6 @@
 import oscillator from './oscillator.js';
 import amp from './amp.js';
+import makeEnvelope from './envelope.js';
 
 
 export function makeVoice({context, frequency, volume}){
@@ -8,15 +9,18 @@ export function makeVoice({context, frequency, volume}){
     context,
     oscillator: oscillator({context, frequency}),
     amp: amp({context}),
+    envelope: makeEnvelope({context}),
     connect(){
       this.oscillator.connect(this.amp);
+      this.envelope.connect(this.amp.amplitude);
       this.amp.connect(volume);
     },
-    start(){
+    start(envelope){
+      this.envelope.envOn(envelope.attack, envelope.decay, envelope.sustain);
       this.oscillator.start();
     },
-    stop(){
-      this.amp.amplitude.value = 0;
+    stop(releaseTime){
+      this.envelope.envOff(releaseTime);
     }
   };
 }

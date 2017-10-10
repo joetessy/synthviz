@@ -34,11 +34,37 @@ export const synthView = {
       }
     }
   },
+  setUpKnobs(){
+    $(".attack").knob({
+        'release': function(v){
+          jQuery.event.trigger('setAttack', v / 100);
+        }
+    });
+    $(".decay").knob({
+        'release' : function (v) {
+          jQuery.event.trigger('setDecay', v / 100);
+        }
+    });
+    $(".sustain").knob({
+        'release' : function (v) {
+          jQuery.event.trigger('setSustain', v / 100);
+        }
+    });
+    $(".release").knob({
+        'release' : function (v) {
+          jQuery.event.trigger('setRelease', v / 100);
+        }
+    });
+  },
   start(){
     let keys = this.keys;
+    this.setUpKnobs();
+
+
     document.addEventListener('keydown', e => {
       let keyInfo = keys[e.keyCode];
       if (keyInfo) {
+        jQuery.event.trigger('gateOn');
         if (keyInfo.down) return;
         keyInfo.down = true;
         keyInfo.action(keyInfo);
@@ -56,7 +82,24 @@ export const synthView = {
       }
 
     });
-    // this.synth.envolope.connect(this.synth.volume.amplitude);
+    let synth = this.synth;
+
+    $(document).bind('setAttack', function (_, value) {
+      this.synth.envelope.attack = value;
+    }.bind(this));
+
+    $(document).bind('setDecay', function (_, value) {
+      this.synth.envelope.decay = value;
+    }.bind(this));
+
+    $(document).bind('setSustain', function (_, value) {
+      this.synth.envelope.sustain = value;
+    }.bind(this));
+
+    $(document).bind('setRelease', function (_, value) {
+      this.synth.envelope.release = value;
+    }.bind(this));
+
     this.synth.volume.connect(this.synth.context.destination);
 
   },

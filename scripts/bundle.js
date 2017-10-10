@@ -108,11 +108,37 @@ const synthView = {
       }
     }
   },
+  setUpKnobs(){
+    $(".attack").knob({
+        'release': function(v){
+          jQuery.event.trigger('setAttack', v / 100);
+        }
+    });
+    $(".decay").knob({
+        'release' : function (v) {
+          jQuery.event.trigger('setDecay', v / 100);
+        }
+    });
+    $(".sustain").knob({
+        'release' : function (v) {
+          jQuery.event.trigger('setSustain', v / 100);
+        }
+    });
+    $(".release").knob({
+        'release' : function (v) {
+          jQuery.event.trigger('setRelease', v / 100);
+        }
+    });
+  },
   start(){
     let keys = this.keys;
+    this.setUpKnobs();
+
+
     document.addEventListener('keydown', e => {
       let keyInfo = keys[e.keyCode];
       if (keyInfo) {
+        jQuery.event.trigger('gateOn');
         if (keyInfo.down) return;
         keyInfo.down = true;
         keyInfo.action(keyInfo);
@@ -130,7 +156,24 @@ const synthView = {
       }
 
     });
-    // this.synth.envolope.connect(this.synth.volume.amplitude);
+    let synth = this.synth;
+
+    $(document).bind('setAttack', function (_, value) {
+      this.synth.envelope.attack = value;
+    }.bind(this));
+
+    $(document).bind('setDecay', function (_, value) {
+      this.synth.envelope.decay = value;
+    }.bind(this));
+
+    $(document).bind('setSustain', function (_, value) {
+      this.synth.envelope.sustain = value;
+    }.bind(this));
+
+    $(document).bind('setRelease', function (_, value) {
+      this.synth.envelope.release = value;
+    }.bind(this));
+
     this.synth.volume.connect(this.synth.context.destination);
 
   },
@@ -160,20 +203,21 @@ function makeSynth(){
     context,
     activeVoices: {},
     destination: context.destination,
-    envelope: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__envelope_js__["a" /* default */])({context}),
     volume,
+    envelope: {attack: 1, decay: 1, sustain: 1, release: 1},
     start(key){
       let n = key.n;
       let frequency = this.calculateFrequency(n);
       this.activeVoices[n] = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__voice_js__["a" /* makeVoice */])({context, frequency, volume});
       this.activeVoices[n].connect();
-      this.activeVoices[n].start();
+      let envelope = this.envelope;
+      this.activeVoices[n].start(envelope);
     },
 
     stop(n){
       if (!this.activeVoices[n]);
       n = this.handleOctaveChange(n);
-      this.activeVoices[n].stop();
+      this.activeVoices[n].stop(this.envelope.release);
       delete this.activeVoices[n];
     },
 
@@ -209,10 +253,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 window.synthView = __WEBPACK_IMPORTED_MODULE_0__synth_view_js__["a" /* synthView */];
 window.synth = __WEBPACK_IMPORTED_MODULE_0__synth_view_js__["a" /* synthView */].synth;
+window.envelope = window.synth.envelope;
 document.addEventListener('DOMContentLoaded', function(){
-  $(function() {
-      $(".dial").knob();
-  });
   __WEBPACK_IMPORTED_MODULE_0__synth_view_js__["a" /* synthView */].start();
 });
 
@@ -225,6 +267,8 @@ document.addEventListener('DOMContentLoaded', function(){
 /* harmony export (immutable) */ __webpack_exports__["a"] = makeVoice;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__oscillator_js__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__amp_js__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__envelope_js__ = __webpack_require__(6);
+
 
 
 
@@ -235,15 +279,18 @@ function makeVoice({context, frequency, volume}){
     context,
     oscillator: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__oscillator_js__["a" /* default */])({context, frequency}),
     amp: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__amp_js__["a" /* default */])({context}),
+    envelope: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__envelope_js__["a" /* default */])({context}),
     connect(){
       this.oscillator.connect(this.amp);
+      this.envelope.connect(this.amp.amplitude);
       this.amp.connect(volume);
     },
-    start(){
+    start(envelope){
+      this.envelope.envOn(envelope.attack, envelope.decay, envelope.sustain);
       this.oscillator.start();
     },
-    stop(){
-      this.amp.amplitude.value = 0;
+    stop(releaseTime){
+      this.envelope.envOff(releaseTime);
     }
   };
 }
@@ -314,21 +361,30 @@ function makeOscillator({context, frequency}){
 "use strict";
 /* harmony export (immutable) */ __webpack_exports__["a"] = makeEnvelope;
 function makeEnvelope({context}){
-  return {
-    attackTime: 0.1,
-    releaseTime: 0.1,
-    trigger(){
+  let envelope = {
+    // attackTime: 0,
+    // releaseTime: .2,
+    // sustainVal: 1,
+    // decayTime: 1,
+    envOn(attackTime, decayTime, sustainVal){
       let now = context.currentTime;
-      this.param.cancleSchduledValues(now);
+      this.param.cancelScheduledValues(now);
       this.param.setValueAtTime(0, now);
-      this.param.linearRampToValueAtTime(1, now + this.attackTime);
-      this.param.linearRampToValueAtTime(0, now +
-        this.attackTime + this.releaseTime);
+      this.param.linearRampToValueAtTime(1, now + attackTime);
+      this.param.linearRampToValueAtTime(
+        sustainVal, now + attackTime + decayTime);
+    },
+    envOff(releaseTime){
+      let now = context.currentTime;
+      this.param.cancelScheduledValues(0);
+      this.param.setValueAtTime(0.5, now);
+      this.param.linearRampToValueAtTime(0, now + releaseTime);
     },
     connect(param){
       this.param = param;
     }
   };
+  return envelope;
 }
 
 

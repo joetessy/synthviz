@@ -1,5 +1,5 @@
 import { makeVoice } from './voice.js';
-import envelope from './envelope.js';
+import makeEnvelope from './envelope.js';
 import amp from './amp.js';
 
 export default function makeSynth(){
@@ -10,20 +10,21 @@ export default function makeSynth(){
     context,
     activeVoices: {},
     destination: context.destination,
-    envelope: envelope({context}),
     volume,
+    envelope: {attack: 1, decay: 1, sustain: 1, release: 1},
     start(key){
       let n = key.n;
       let frequency = this.calculateFrequency(n);
       this.activeVoices[n] = makeVoice({context, frequency, volume});
       this.activeVoices[n].connect();
-      this.activeVoices[n].start();
+      let envelope = this.envelope;
+      this.activeVoices[n].start(envelope);
     },
 
     stop(n){
       if (!this.activeVoices[n]);
       n = this.handleOctaveChange(n);
-      this.activeVoices[n].stop();
+      this.activeVoices[n].stop(this.envelope.release);
       delete this.activeVoices[n];
     },
 
