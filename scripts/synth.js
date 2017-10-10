@@ -17,15 +17,26 @@ export default function makeSynth(){
       this.activeVoices[n].start();
     },
     stop(n){
-      if (!this.activeVoices[n]) {
-        n += 12;
-        if (!this.activeVoices[n]){
-          n -= 24;
-        }
-      }
+      if (!this.activeVoices[n]);
+      n = this.handleOctaveChange(n);
       this.activeVoices[n].stop();
       delete this.activeVoices[n];
     },
+
+    handleOctaveChange(n){
+      let order = 1;
+      while (!this.activeVoices[n]){
+        let inc = 12;
+        if (this.activeVoices[n + (inc * order)]){
+          n = n + (inc * order);
+        } else if (this.activeVoices[ n - (inc * order)]){
+          n = n - (inc * order);
+        }
+        order += 1;
+      }
+      return n;
+    },
+
     calculateFrequency(n){
       return Math.pow(2, (n-49)/12) * 440;
     }

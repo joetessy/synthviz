@@ -2,7 +2,6 @@ import makeSynth from './synth.js';
 
 export const synthView = {
   synth: makeSynth(),
-
   keys: {
     65: { down: false, n: 40 },
     87: { down: false, n: 41 },
@@ -20,54 +19,50 @@ export const synthView = {
     79: { down: false, n: 53 },
     76: { down: false, n: 54 },
     80: { down: false, n: 55 },
-    90: { down: false },
-    88: { down: false }
+    90: { down: false, type: 'octave' },
+    88: { down: false, type: 'octave' }
   },
-
-  octave(direction){
+  octave(key){
     let codes = Object.keys(this.keys);
     for (let i = 0; i < codes.length; i++){
-      if (direction === 'up'){
+      if (key === 88){
         this.keys[codes[i]].n += 12;
       } else {
         this.keys[codes[i]].n -= 12;
       }
     }
   },
-
   start(){
-    document.addEventListener('keydown', e => {
-      let key = e.keyCode;
+    let keys = this.keys;
 
-      if (this.keys[key].down) return;
-      this.keys[key].down = true;
+    document.addEventListener('keydown', e => {
+
+      if (keys[e.keyCode]) {
+        let key = e.keyCode;
+
+      if (keys[key].down) return;
+      keys[key].down = true;
 
       // Change Octave
-      if (key === 90){
-        this.octave('down');
-        return;
-      } else if (key === 88){
-        this.octave('up');
+      if (keys[key].type === 'octave') {
+        this.octave(key);
         return;
       }
 
-
-      if (this.keys[e.keyCode]) {
-        let n = this.keys[key].n;
+        let n = keys[key].n;
         this.synth.createVoice(n);
       }
 
     });
 
     document.addEventListener('keyup', e => {
-      if (this.keys[e.keyCode]) {
+      if (keys[e.keyCode]) {
         let key = e.keyCode;
-        this.keys[key].down = false;
-        if (key === 90 || key === 88){
-          return;
-        }
+        keys[key].down = false;
 
-        let n = this.keys[key].n;
+        //
+        if (keys[key].type === 'octave') return;
+        let n = keys[key].n;
         this.synth.stop(n);
       }
     });
