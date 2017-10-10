@@ -204,7 +204,7 @@ function makeSynth(){
     activeVoices: {},
     destination: context.destination,
     volume,
-    envelope: {attack: 1, decay: 1, sustain: 1, release: 1},
+    envelope: {attack: 0, decay: 0, sustain: 1, release: 0},
     start(key){
       let n = key.n;
       let frequency = this.calculateFrequency(n);
@@ -362,10 +362,7 @@ function makeOscillator({context, frequency}){
 /* harmony export (immutable) */ __webpack_exports__["a"] = makeEnvelope;
 function makeEnvelope({context}){
   let envelope = {
-    // attackTime: 0,
-    // releaseTime: .2,
-    // sustainVal: 1,
-    // decayTime: 1,
+
     envOn(attackTime, decayTime, sustainVal){
       let now = context.currentTime;
       this.param.cancelScheduledValues(now);
@@ -377,7 +374,7 @@ function makeEnvelope({context}){
     envOff(releaseTime){
       let now = context.currentTime;
       this.param.cancelScheduledValues(0);
-      this.param.setValueAtTime(0.5, now);
+      this.param.setValueAtTime(this.param.value, now);
       this.param.linearRampToValueAtTime(0, now + releaseTime);
     },
     connect(param){

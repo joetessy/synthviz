@@ -11,7 +11,7 @@ export default function makeSynth(){
     activeVoices: {},
     destination: context.destination,
     volume,
-    envelope: {attack: 1, decay: 1, sustain: 1, release: 1},
+    envelope: {attack: 0, decay: 0, sustain: 1, release: 0},
     start(key){
       let n = key.n;
       let frequency = this.calculateFrequency(n);
