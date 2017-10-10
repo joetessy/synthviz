@@ -6,14 +6,12 @@ export default function makeSynth(){
   return {
     context,
     activeVoices: {},
-    createVoice(n){
+    start(key){
+      let n = key.n;
       let frequency = this.calculateFrequency(n);
       this.activeVoices[n] = makeVoice({context, frequency});
       this.activeVoices[n].setFrequency();
       this.activeVoices[n].connect();
-      this.start(n);
-    },
-    start(n){
       this.activeVoices[n].start();
     },
     stop(n){

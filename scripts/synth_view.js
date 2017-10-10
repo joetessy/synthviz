@@ -3,29 +3,31 @@ import makeSynth from './synth.js';
 export const synthView = {
   synth: makeSynth(),
   keys: {
-    65: { down: false, n: 40 },
-    87: { down: false, n: 41 },
-    83: { down: false, n: 42 },
-    69: { down: false, n: 43 },
-    68: { down: false, n: 44 },
-    70: { down: false, n: 45 },
-    84: { down: false, n: 46 },
-    71: { down: false, n: 47 },
-    89: { down: false, n: 48 },
-    72: { down: false, n: 49 },
-    85: { down: false, n: 50 },
-    74: { down: false, n: 51 },
-    75: { down: false, n: 52 },
-    79: { down: false, n: 53 },
-    76: { down: false, n: 54 },
-    80: { down: false, n: 55 },
-    90: { down: false, type: 'octave' },
-    88: { down: false, type: 'octave' }
+    65: { down: false, n: 40, action: (n) => synthView.synth.start(n) },
+    87: { down: false, n: 41, action: (n) => synthView.synth.start(n) },
+    83: { down: false, n: 42, action: (n) => synthView.synth.start(n) },
+    69: { down: false, n: 43, action: (n) => synthView.synth.start(n) },
+    68: { down: false, n: 44, action: (n) => synthView.synth.start(n) },
+    70: { down: false, n: 45, action: (n) => synthView.synth.start(n) },
+    84: { down: false, n: 46, action: (n) => synthView.synth.start(n) },
+    71: { down: false, n: 47, action: (n) => synthView.synth.start(n) },
+    89: { down: false, n: 48, action: (n) => synthView.synth.start(n) },
+    72: { down: false, n: 49, action: (n) => synthView.synth.start(n) },
+    85: { down: false, n: 50, action: (n) => synthView.synth.start(n) },
+    74: { down: false, n: 51, action: (n) => synthView.synth.start(n) },
+    75: { down: false, n: 52, action: (n) => synthView.synth.start(n) },
+    79: { down: false, n: 53, action: (n) => synthView.synth.start(n) },
+    76: { down: false, n: 54, action: (n) => synthView.synth.start(n) },
+    80: { down: false, n: 55, action: (n) => synthView.synth.start(n) },
+    90: { down: false, type: 'octave', dir: 'down',
+      action: (n) => synthView.octave(n) },
+    88: { down: false, type: 'octave', dir: 'up',
+      action: (n) => synthView.octave(n) }
   },
-  octave(key){
+  octave(obj){
     let codes = Object.keys(this.keys);
     for (let i = 0; i < codes.length; i++){
-      if (key === 88){
+      if (obj.dir === 'up'){
         this.keys[codes[i]].n += 12;
       } else {
         this.keys[codes[i]].n -= 12;
@@ -34,35 +36,22 @@ export const synthView = {
   },
   start(){
     let keys = this.keys;
-
     document.addEventListener('keydown', e => {
-
-      if (keys[e.keyCode]) {
-        let key = e.keyCode;
-
-      if (keys[key].down) return;
-      keys[key].down = true;
-
-      // Change Octave
-      if (keys[key].type === 'octave') {
-        this.octave(key);
-        return;
+      let keyInfo = keys[e.keyCode];
+      if (keyInfo) {
+        if (keyInfo.down) return;
+        keyInfo.down = true;
+        keyInfo.action(keyInfo);
       }
-
-        let n = keys[key].n;
-        this.synth.createVoice(n);
-      }
-
     });
 
     document.addEventListener('keyup', e => {
-      if (keys[e.keyCode]) {
-        let key = e.keyCode;
-        keys[key].down = false;
-
-        //
-        if (keys[key].type === 'octave') return;
-        let n = keys[key].n;
+      let keyInfo = keys[e.keyCode];
+      if (keyInfo) {
+        keyInfo.down = false;
+        // If octave key, return before stopping synth
+        if (keyInfo.type === 'octave' ) return;
+        let n = keyInfo.n;
         this.synth.stop(n);
       }
     });

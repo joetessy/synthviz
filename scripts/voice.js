@@ -7,13 +7,16 @@ export function makeVoice({context, frequency}){
       this.oscillator.frequency.value = this.frequency;
     },
     connect(){
-      this.oscillator.connect(this.context.destination);
+      this.gain = this.context.createGain();
+      this.gain.gain.value = 0.3;
+      this.oscillator.connect(this.gain);
+      this.gain.connect(this.context.destination);
     },
     start(){
       this.oscillator.start();
     },
     stop(){
-      this.oscillator.stop();
+      this.gain.gain.value = 0;
     }
   };
 }
