@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 2);
+/******/ 	return __webpack_require__(__webpack_require__.s = 5);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -71,7 +71,67 @@
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__synth_js__ = __webpack_require__(1);
+/* harmony export (immutable) */ __webpack_exports__["a"] = makeAmp;
+function makeAmp({context}){
+  let gain = context.createGain();
+  let input = gain,
+      output = gain,
+      amplitude = gain.gain;
+  gain.gain.value = 0.5;
+  return {
+    gain,
+    input,
+    output,
+    amplitude,
+    connect(node){
+      if (node.hasOwnProperty('input')) {
+        this.output.connect(node.input);
+      } else {
+        this.output.connect(node);
+      }
+    }
+  };
+}
+
+
+/***/ }),
+/* 1 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (immutable) */ __webpack_exports__["a"] = makeEnvelope;
+function makeEnvelope({context}){
+  let envelope = {
+
+    envOn(attackTime, decayTime, sustainVal){
+      let now = context.currentTime;
+      this.param.cancelScheduledValues(now);
+      this.param.setValueAtTime(0, now);
+      this.param.linearRampToValueAtTime(0.5, now + attackTime);
+      this.param.linearRampToValueAtTime(
+        sustainVal, now + attackTime + decayTime);
+    },
+
+    envOff(releaseTime){
+      let now = context.currentTime;
+      this.param.cancelScheduledValues(0);
+      this.param.setValueAtTime(this.param.value, now);
+      this.param.linearRampToValueAtTime(0, now + releaseTime);
+    },
+    connect(param){
+      this.param = param;
+    }
+  };
+  return envelope;
+}
+
+
+/***/ }),
+/* 2 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__synth_js__ = __webpack_require__(4);
 
 
 const synthView = {
@@ -109,31 +169,28 @@ const synthView = {
     }
   },
   setUpKnobs(){
-    $(".attack").knob({
+    $(".knob").knob({
         'release': function(v){
-          jQuery.event.trigger('setAttack', v / 100);
-        }
-    });
-    $(".decay").knob({
-        'release' : function (v) {
-          jQuery.event.trigger('setDecay', v / 100);
-        }
-    });
-    $(".sustain").knob({
-        'release' : function (v) {
-          jQuery.event.trigger('setSustain', (v / 100 * .5));
-        }
-    });
-    $(".release").knob({
-        'release' : function (v) {
-          jQuery.event.trigger('setRelease', v / 100);
+          switch(this.$[0].dataset.action){
+            case 'attack':
+              jQuery.event.trigger('setAttack', v / 100);
+              break;
+            case 'decay':
+              jQuery.event.trigger('setDecay', v / 100);
+              break;
+            case 'sustain':
+              jQuery.event.trigger('setSustain', (v / 100 * .5));
+              break;
+            case 'release':
+              jQuery.event.trigger('setRelease', v / 100);
+              break;
+          }
         }
     });
   },
   start(){
     let keys = this.keys;
     this.setUpKnobs();
-
 
     document.addEventListener('keydown', e => {
       let keyInfo = keys[e.keyCode];
@@ -183,14 +240,44 @@ const synthView = {
 
 
 /***/ }),
-/* 1 */
+/* 3 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (immutable) */ __webpack_exports__["a"] = makeOscillator;
+function makeOscillator({context, frequency}){
+  var oscillator = context.createOscillator();
+  let input = oscillator,
+      output = oscillator;
+  return {
+    oscillator,
+    frequency,
+    start(){
+      oscillator.frequency.value = this.frequency;
+      oscillator.start();
+    },
+    input,
+    output,
+    connect(node){
+      if (node.hasOwnProperty('input')) {
+        output.connect(node.input);
+      } else {
+        output.connect(node);
+      }
+    }
+  };
+}
+
+
+/***/ }),
+/* 4 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (immutable) */ __webpack_exports__["a"] = makeSynth;
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__voice_js__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__envelope_js__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__amp_js__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__voice_js__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__envelope_js__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__amp_js__ = __webpack_require__(0);
 
 
 
@@ -243,12 +330,12 @@ function makeSynth(){
 
 
 /***/ }),
-/* 2 */
+/* 5 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__synth_view_js__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__synth_view_js__ = __webpack_require__(2);
 
 
 window.synthView = __WEBPACK_IMPORTED_MODULE_0__synth_view_js__["a" /* synthView */];
@@ -260,14 +347,14 @@ document.addEventListener('DOMContentLoaded', function(){
 
 
 /***/ }),
-/* 3 */
+/* 6 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (immutable) */ __webpack_exports__["a"] = makeVoice;
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__oscillator_js__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__amp_js__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__envelope_js__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__oscillator_js__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__amp_js__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__envelope_js__ = __webpack_require__(1);
 
 
 
@@ -293,96 +380,6 @@ function makeVoice({context, frequency, volume}){
       this.envelope.envOff(releaseTime);
     }
   };
-}
-
-
-/***/ }),
-/* 4 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (immutable) */ __webpack_exports__["a"] = makeAmp;
-function makeAmp({context}){
-  let gain = context.createGain();
-  let input = gain,
-      output = gain,
-      amplitude = gain.gain;
-  gain.gain.value = 0.5;
-  return {
-    gain,
-    input,
-    output,
-    amplitude,
-    connect(node){
-      if (node.hasOwnProperty('input')) {
-        this.output.connect(node.input);
-      } else {
-        this.output.connect(node);
-      }
-    }
-  };
-}
-
-
-/***/ }),
-/* 5 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (immutable) */ __webpack_exports__["a"] = makeOscillator;
-function makeOscillator({context, frequency}){
-  var oscillator = context.createOscillator();
-  let input = oscillator,
-      output = oscillator;
-  return {
-    oscillator,
-    frequency,
-    start(){
-      oscillator.frequency.value = this.frequency;
-      oscillator.start();
-    },
-    input,
-    output,
-    connect(node){
-      if (node.hasOwnProperty('input')) {
-        output.connect(node.input);
-      } else {
-        output.connect(node);
-      }
-    }
-  };
-}
-
-
-/***/ }),
-/* 6 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (immutable) */ __webpack_exports__["a"] = makeEnvelope;
-function makeEnvelope({context}){
-  let envelope = {
-
-    envOn(attackTime, decayTime, sustainVal){
-      let now = context.currentTime;
-      this.param.cancelScheduledValues(now);
-      this.param.setValueAtTime(0, now);
-      this.param.linearRampToValueAtTime(0.5, now + attackTime);
-      this.param.linearRampToValueAtTime(
-        sustainVal, now + attackTime + decayTime);
-    },
-
-    envOff(releaseTime){
-      let now = context.currentTime;
-      this.param.cancelScheduledValues(0);
-      this.param.setValueAtTime(this.param.value, now);
-      this.param.linearRampToValueAtTime(0, now + releaseTime);
-    },
-    connect(param){
-      this.param = param;
-    }
-  };
-  return envelope;
 }
 
 

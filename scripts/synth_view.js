@@ -35,31 +35,28 @@ export const synthView = {
     }
   },
   setUpKnobs(){
-    $(".attack").knob({
+    $(".knob").knob({
         'release': function(v){
-          jQuery.event.trigger('setAttack', v / 100);
-        }
-    });
-    $(".decay").knob({
-        'release' : function (v) {
-          jQuery.event.trigger('setDecay', v / 100);
-        }
-    });
-    $(".sustain").knob({
-        'release' : function (v) {
-          jQuery.event.trigger('setSustain', (v / 100 * .5));
-        }
-    });
-    $(".release").knob({
-        'release' : function (v) {
-          jQuery.event.trigger('setRelease', v / 100);
+          switch(this.$[0].dataset.action){
+            case 'attack':
+              jQuery.event.trigger('setAttack', v / 100);
+              break;
+            case 'decay':
+              jQuery.event.trigger('setDecay', v / 100);
+              break;
+            case 'sustain':
+              jQuery.event.trigger('setSustain', (v / 100 * .5));
+              break;
+            case 'release':
+              jQuery.event.trigger('setRelease', v / 100);
+              break;
+          }
         }
     });
   },
   start(){
     let keys = this.keys;
     this.setUpKnobs();
-
 
     document.addEventListener('keydown', e => {
       let keyInfo = keys[e.keyCode];
