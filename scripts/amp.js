@@ -1,14 +1,19 @@
-export default function makeAmp({context}){
+export default function makeAmp({context, vol}){
   let gain = context.createGain();
+  if (vol === undefined) vol = 0.5;
   let input = gain,
       output = gain,
       amplitude = gain.gain;
-  gain.gain.value = 0.5;
+      amplitude.value = vol;
+
   return {
     gain,
     input,
     output,
     amplitude,
+    changeAmplitude(newAmplitude){
+      this.amplitude.value = newAmplitude;
+    },
     connect(node){
       if (node.hasOwnProperty('input')) {
         this.output.connect(node.input);

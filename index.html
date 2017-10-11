@@ -15,49 +15,206 @@
 <body>
     <header>
     </header>
-    <div class='controls'>
+    <div class='envelope-controls'>
       <div class='control'>
-        <h3> Attack </h3>
-        <input type="text" value="0" class="attack knob"
+        <h4> Attack </h4>
+        <input type="text" value="0" class="knob"
         data-action='attack'
-        data-width="100"
+        data-width="50"
+        data-height='50'
         data-fgColor="#ff00f7"
         data-skin="tron"
-        data-thickness=".3"
+        data-thickness=".2"
         data-angleOffset="180"/>
       </div>
       <div class='control'>
-        <h3> Decay </h3>
-          <input type="text" value="0" class="decay knob"
+        <h4> Decay </h4>
+          <input type="text" value="0" class="knob"
           data-action='decay'
-          data-width="100"
+          data-width="50"
+          data-height='50'
           data-fgColor="#ff00f7"
           data-skin="tron"
-          data-thickness=".3"
+          data-thickness=".2"
           data-angleOffset="180"/>
       </div>
       <div class='control'>
-        <h3> Sustain </h3>
+        <h4> Sustain </h4>
           <input type="text" value="100" class="knob"
           data-action='sustain'
-          data-width="100"
+          data-width="50"
+          data-height='50'
           data-fgColor="#ff00f7"
           data-skin="tron"
-          data-thickness=".3"
+          data-thickness=".2"
           data-angleOffset="180"/>
       </div>
       <div class='control'>
-      <h3> Release </h3>
-        <input type="text" value="10" class="release knob"
+      <h4> Release </h4>
+        <input type="text" value="10" class="knob"
         data-action='release'
-        data-width="100"
+        data-width="50"
+        data-height='50'
         data-fgColor="#ff00f7"
         data-skin="tron"
-        data-thickness=".3"
+        data-thickness=".2"
         data-angleOffset="180"/>
       </div>
     </div>
-
+    <div class='oscillators'>
+      <div class='osc'>
+        <h3>OSC 1</h3>
+        <div class='settings'>
+          <div class='types'>
+            <h4>Type</h4>
+            <div data-type='sine' data-osc='1' class='osctype active'>
+              <img src='images/sin.png'/>
+            </div>
+            <div data-type='square' data-osc='1' class='osctype'>
+              <img src='images/square.png'/>
+            </div>
+            <div data-type='sawtooth' data-osc='1' class='osctype'>
+              <img src='images/saw.png'/>
+            </div>
+            <div data-type='triangle' data-osc='1' class='osctype'>
+              <img src='images/triangle.png'/>
+            </div>
+          </div>
+          <div class='balance'>
+            <div class='control osccontrol'>
+              <h4>Volume</h4>
+              <input type="text" value="100" class="knob"
+              data-osc='1'
+              data-action='oscVolume'
+              data-width="50"
+              data-height='50'
+              data-fgColor="#ff00f7"
+              data-skin="tron"
+              data-thickness=".2"
+              data-angleOffset="180"/>
+            </div>
+            <div class='control osccontrol'>
+              <h4>Octave</h4>
+              <input type="text" value="1" class="knob"
+              data-osc='1'
+              data-action='octave'
+              data-height='50'
+              data-width="50"
+              data-min="1"
+              data-max="4"
+              data-fgColor="#ff00f7"
+              data-skin="tron"
+              data-thickness=".2"
+              data-angleOffset="180"/>
+            </div>
+            <div class='control osccontrol'>
+              <h4>Cutoff Freq</h4>
+                <input type="text" value="2" class="knob"
+                data-osc='1'
+                data-action='cutoff'
+                data-width="50"
+                data-min="30"
+                data-max="22000"
+                data-height='50'
+                data-fgColor="#ff00f7"
+                data-skin="tron"
+                data-thickness=".2"
+                data-angleOffset="180"/>
+            </div>
+            <div class='control osccontrol'>
+              <h4>Res</h4>
+                <input type="text" value="2" class="knob"
+                data-osc='1'
+                data-action='res'
+                data-width="50"
+                data-min="1"
+                data-max="4"
+                data-height='50'
+                data-fgColor="#ff00f7"
+                data-skin="tron"
+                data-thickness=".2"
+                data-angleOffset="180"/>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class='osc'>
+        <h3>OSC 2</h3>
+        <div class='settings'>
+          <div class='types'>
+            <h4>Type</h4>
+            <div data-type='sine' data-osc='2' class='osctype active'>
+              <img src='images/sin.png'/>
+            </div>
+            <div data-type='square' data-osc='2' class='osctype'>
+              <img src='images/square.png'/>
+            </div>
+            <div data-type='sawtooth' data-osc='2' class='osctype'>
+              <img src='images/saw.png'/>
+            </div>
+            <div data-type='triangle' data-osc='2' class='osctype'>
+              <img src='images/triangle.png'/>
+            </div>
+          </div>
+          <div class='balance'>
+            <div class='control osccontrol'>
+              <h4>Volume</h4>
+              <input type="text" value="0" class="knob"
+              data-osc='2'
+              data-action='oscVolume'
+              data-width="50"
+              data-height='50'
+              data-fgColor="#ff00f7"
+              data-skin="tron"
+              data-thickness=".2"
+              data-angleOffset="180"/>
+            </div>
+            <div class='control osccontrol'>
+            <h4>Octave</h4>
+              <input type="text" value="2" class="knob"
+              data-osc='2'
+              data-action='octave'
+              data-width="50"
+              data-min="1"
+              data-max="4"
+              data-height='50'
+              data-fgColor="#ff00f7"
+              data-skin="tron"
+              data-thickness=".2"
+              data-angleOffset="180"/>
+            </div>
+            <div class='control osccontrol'>
+              <h4>Cutoff Freq</h4>
+                <input type="text" value="2" class="knob"
+                data-osc='2'
+                data-action='cutoff'
+                data-width="50"
+                data-min="1"
+                data-max="4"
+                data-height='50'
+                data-fgColor="#ff00f7"
+                data-skin="tron"
+                data-thickness=".2"
+                data-angleOffset="180"/>
+            </div>
+            <div class='control osccontrol'>
+              <h4>Res</h4>
+                <input type="text" value="2" class="knob"
+                data-osc='2'
+                data-action='res'
+                data-width="50"
+                data-min="1"
+                data-max="4"
+                data-height='50'
+                data-fgColor="#ff00f7"
+                data-skin="tron"
+                data-thickness=".2"
+                data-angleOffset="180"/>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <script src="scripts/bundle.js" charset="utf-8"></script>
 </body>
 

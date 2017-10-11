@@ -72,17 +72,22 @@
 
 "use strict";
 /* harmony export (immutable) */ __webpack_exports__["a"] = makeAmp;
-function makeAmp({context}){
+function makeAmp({context, vol}){
   let gain = context.createGain();
+  if (vol === undefined) vol = 0.5;
   let input = gain,
       output = gain,
       amplitude = gain.gain;
-  gain.gain.value = 0.5;
+      amplitude.value = vol;
+
   return {
     gain,
     input,
     output,
     amplitude,
+    changeAmplitude(newAmplitude){
+      this.amplitude.value = newAmplitude;
+    },
     connect(node){
       if (node.hasOwnProperty('input')) {
         this.output.connect(node.input);
@@ -103,13 +108,13 @@ function makeAmp({context}){
 function makeEnvelope({context}){
   let envelope = {
 
-    envOn(attackTime, decayTime, sustainVal){
+    envOn(attackTime, decayTime, sustainVal, amplitude){
       let now = context.currentTime;
       this.param.cancelScheduledValues(now);
       this.param.setValueAtTime(0, now);
-      this.param.linearRampToValueAtTime(0.5, now + attackTime);
+      this.param.linearRampToValueAtTime(amplitude, now + attackTime);
       this.param.linearRampToValueAtTime(
-        sustainVal, now + attackTime + decayTime);
+        (amplitude * sustainVal), now + attackTime + decayTime);
     },
 
     envOff(releaseTime){
@@ -169,6 +174,7 @@ const synthView = {
     }
   },
   setUpKnobs(){
+    let that = this;
     $(".knob").knob({
         'release': function(v){
           switch(this.$[0].dataset.action){
@@ -184,14 +190,43 @@ const synthView = {
             case 'release':
               jQuery.event.trigger('setRelease', 5 * v / 100);
               break;
+            case 'oscVolume':
+              if (this.$[0].dataset.osc === '1'){
+                that.synth.changeOscVolume(v/200, 1);
+              } else {
+                that.synth.changeOscVolume(v/200, 2);
+              }
+              break;
+            case 'octave':
+              if (this.$[0].dataset.osc === '1'){
+                that.synth.changeOctave(v, 1);
+              } else {
+                that.synth.changeOctave(v, 2);
+              }
+              break;
           }
         }
+    });
+  },
+  setUpOscillatorTypes(){
+    var oscSettings = document.querySelectorAll('.osctype');
+    oscSettings.forEach((osc) => {
+      osc.addEventListener('click', function(e){
+        let type = e.currentTarget.getAttribute('data-type');
+        let num = e.currentTarget.getAttribute('data-osc');
+        let currSet = document.querySelectorAll(`div[data-osc="${num}"]`);
+        currSet.forEach(osci => {
+          osci.classList.remove('active');
+        });
+        this.synth.changeType(type, num);
+        e.currentTarget.classList.add('active');
+      }.bind(this));
     });
   },
   start(){
     let keys = this.keys;
     this.setUpKnobs();
-
+    this.setUpOscillatorTypes();
     document.addEventListener('keydown', e => {
       let keyInfo = keys[e.keyCode];
       if (keyInfo) {
@@ -245,19 +280,27 @@ const synthView = {
 
 "use strict";
 /* harmony export (immutable) */ __webpack_exports__["a"] = makeOscillator;
-function makeOscillator({context, frequency, type}){
+function makeOscillator({context, frequency, type, oct}){
   var oscillator = context.createOscillator();
   let input = oscillator,
       output = oscillator;
   return {
+    oct,
     oscillator,
     frequency,
     type,
     start(){
       oscillator.type = this.type;
-      oscillator.frequency.value = this.frequency;
+      oscillator.frequency.value = this.frequency * Math.pow(2, oct - 1);
       oscillator.start();
     },
+    changeType(newType){
+      oscillator.type = newType;
+    },
+    changeOctave(octave){
+      this.frequency = this.frequency * Math.pow(2, oct - 1);
+    },
+
     input,
     output,
     connect(node){
@@ -293,16 +336,68 @@ function makeSynth(){
     activeVoices: {},
     destination: context.destination,
     volume,
-    osc1type: 'sawtooth',
+    osc1type: 'sine',
+    osc2type: 'sine',
+    osc1vol: 0.5,
+    osc2vol: 0,
+    osc1oct: 1,
+    osc2oct: 2,
     envelope: {attack: 0, decay: 0, sustain: .5, release: .5},
     start(key){
       let n = key.n;
       let frequency = this.calculateFrequency(n);
-      let type = this.osc1type;
-      this.activeVoices[n] = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__voice_js__["a" /* makeVoice */])({context, frequency, volume, type});
+      let type1 = this.osc1type, type2 = this.osc2type,
+          vol1 = this.osc1vol, vol2 = this.osc2vol,
+          oct1 = this.osc1oct, oct2 = this.osc2oct;
+      this.activeVoices[n] =
+        __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__voice_js__["a" /* makeVoice */])({context, frequency, volume, type1, type2, vol1, vol2, oct1, oct2});
       this.activeVoices[n].connect();
       let envelope = this.envelope;
       this.activeVoices[n].start(envelope);
+    },
+
+    changeOscVolume(vol, osc){
+      if (osc === 1){
+        this.osc1vol = vol;
+      } else {
+        this.osc2vol = vol;
+      }
+      let voiceKeys = Object.keys(this.activeVoices);
+      for (let i = 0; i < voiceKeys.length; i++){
+        this.activeVoices[voiceKeys[i]].amp1.changeAmplitude(this.osc1vol);
+        this.activeVoices[voiceKeys[i]].amp2.changeAmplitude(this.osc2vol);
+      }
+    },
+    //
+    // changeOscProp(prop, val){
+    //   let voiceKeys = Object.keys(this.activeVoices);
+    //   for (let i = 0; i < voiceKeys.length; i++){
+    //     this.activeVoices[voiceKeys[i]][prop] = val;
+    //     this.activeVoices[voiceKeys[i]][prop] = val;
+    //   }
+    // },
+    changeOctave(octave, osc){
+      if (osc === 1){
+        this.osc1oct = octave;
+      } else {
+        this.osc2oct = octave;
+      }
+
+      let voiceKeys = Object.keys(this.activeVoices);
+      for (let i = 0; i < voiceKeys.length; i++){
+          this.activeVoices[voiceKeys[i]].oscillator1.changeOctave(this.osc1oct);
+          this.activeVoices[voiceKeys[i]].oscillator2.changeOctave(this.osc2oct);
+
+        }
+    },
+
+    changeType(type, osc){
+      if (osc === '1'){
+        this.osc1type = type;
+      } else {
+        this.osc2type = type;
+      }
+      let voiceKeys = Object.keys(this.activeVoices);
     },
 
     stop(n){
@@ -364,24 +459,40 @@ document.addEventListener('DOMContentLoaded', function(){
 
 
 
-function makeVoice({context, frequency, volume, type}){
+function makeVoice({
+  context, frequency, volume, type1, type2, vol1, vol2, oct1, oct2}){
   return {
     frequency,
     context,
-    oscillator: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__oscillator_js__["a" /* default */])({context, frequency, type}),
-    amp: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__amp_js__["a" /* default */])({context}),
-    envelope: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__envelope_js__["a" /* default */])({context}),
+    oscillator1: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__oscillator_js__["a" /* default */])({context, frequency, oct: oct1, type: type1}),
+    oscillator2: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__oscillator_js__["a" /* default */])({context, frequency, oct: oct2, type: type2}),
+    amp1: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__amp_js__["a" /* default */])({context, vol: vol1}),
+    amp2: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__amp_js__["a" /* default */])({context, vol: vol2}),
+    envelope1: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__envelope_js__["a" /* default */])({context}),
+    envelope2: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__envelope_js__["a" /* default */])({context}),
     connect(){
-      this.oscillator.connect(this.amp);
-      this.envelope.connect(this.amp.amplitude);
-      this.amp.connect(volume);
+      this.oscillator1.connect(this.amp1);
+      this.oscillator2.connect(this.amp2);
+
+      this.envelope1.connect(this.amp1.amplitude);
+      this.envelope2.connect(this.amp2.amplitude);
+
+      this.amp1.connect(volume);
+      this.amp2.connect(volume);
     },
     start(envelope){
-      this.envelope.envOn(envelope.attack, envelope.decay, envelope.sustain);
-      this.oscillator.start();
+      this.envelope1.envOn(envelope.attack, envelope.decay,
+          envelope.sustain, this.amp1.amplitude.value);
+      this.envelope2.envOn(envelope.attack, envelope.decay,
+          envelope.sustain, this.amp2.amplitude.value);
+
+      this.oscillator1.start();
+      this.oscillator2.start();
+
     },
     stop(releaseTime){
-      this.envelope.envOff(releaseTime);
+      this.envelope1.envOff(releaseTime);
+      this.envelope2.envOff(releaseTime);
     }
   };
 }

@@ -12,16 +12,29 @@ body {
   font-family: sans-serif
 }
 
-.controls {
+h1, h2, h4 {
+  color: white;
+}
+
+h3{
+  color: #ff00f7
+}
+
+h4{
+  margin: 5px;
+}
+
+.envelope-controls {
   display: flex;
+  width: 368px;
   flex-direction: row;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
 }
 
 .control {
   display: flex;
-  margin: 10px;
+  margin-left: 10px;
   flex-direction: column;
   align-items: center;
   user-select: none;
@@ -30,4 +43,54 @@ body {
 
 .knob:focus {
   outline: 0;
+}
+
+.osc {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-right: 30px;
+}
+
+.osctype {
+  margin: 0 10px;
+  margin-bottom: 39px;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 5px solid white;
+  box-sizing: border-box;
+  height: 50px;
+  font-size: 10px;
+  width: 50px;
+  border-radius: 100%;
+  background-color: white;
+  cursor: pointer;
+}
+
+.types, .balance{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.active {
+  border-color: #ff00f7;
+  background-color: #ff00f7;
+}
+
+.osccontrol{
+  margin-bottom: 10px;
+}
+
+.oscillators {
+  display: flex;
+}
+
+.settings{
+  display: flex;
+}
+
+.types img {
+  height:20px;
 }

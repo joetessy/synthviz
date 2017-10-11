@@ -35,6 +35,7 @@ export const synthView = {
     }
   },
   setUpKnobs(){
+    let that = this;
     $(".knob").knob({
         'release': function(v){
           switch(this.$[0].dataset.action){
@@ -50,14 +51,43 @@ export const synthView = {
             case 'release':
               jQuery.event.trigger('setRelease', 5 * v / 100);
               break;
+            case 'oscVolume':
+              if (this.$[0].dataset.osc === '1'){
+                that.synth.changeOscVolume(v/200, 1);
+              } else {
+                that.synth.changeOscVolume(v/200, 2);
+              }
+              break;
+            case 'octave':
+              if (this.$[0].dataset.osc === '1'){
+                that.synth.changeOctave(v, 1);
+              } else {
+                that.synth.changeOctave(v, 2);
+              }
+              break;
           }
         }
+    });
+  },
+  setUpOscillatorTypes(){
+    var oscSettings = document.querySelectorAll('.osctype');
+    oscSettings.forEach((osc) => {
+      osc.addEventListener('click', function(e){
+        let type = e.currentTarget.getAttribute('data-type');
+        let num = e.currentTarget.getAttribute('data-osc');
+        let currSet = document.querySelectorAll(`div[data-osc="${num}"]`);
+        currSet.forEach(osci => {
+          osci.classList.remove('active');
+        });
+        this.synth.changeType(type, num);
+        e.currentTarget.classList.add('active');
+      }.bind(this));
     });
   },
   start(){
     let keys = this.keys;
     this.setUpKnobs();
-
+    this.setUpOscillatorTypes();
     document.addEventListener('keydown', e => {
       let keyInfo = keys[e.keyCode];
       if (keyInfo) {

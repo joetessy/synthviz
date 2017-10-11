@@ -1,13 +1,13 @@
 export default function makeEnvelope({context}){
   let envelope = {
 
-    envOn(attackTime, decayTime, sustainVal){
+    envOn(attackTime, decayTime, sustainVal, amplitude){
       let now = context.currentTime;
       this.param.cancelScheduledValues(now);
       this.param.setValueAtTime(0, now);
-      this.param.linearRampToValueAtTime(0.5, now + attackTime);
+      this.param.linearRampToValueAtTime(amplitude, now + attackTime);
       this.param.linearRampToValueAtTime(
-        sustainVal, now + attackTime + decayTime);
+        (amplitude * sustainVal), now + attackTime + decayTime);
     },
 
     envOff(releaseTime){
