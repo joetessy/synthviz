@@ -3,11 +3,11 @@ import amp from './amp.js';
 import makeEnvelope from './envelope.js';
 
 
-export function makeVoice({context, frequency, volume}){
+export function makeVoice({context, frequency, volume, type}){
   return {
     frequency,
     context,
-    oscillator: oscillator({context, frequency}),
+    oscillator: oscillator({context, frequency, type}),
     amp: amp({context}),
     envelope: makeEnvelope({context}),
     connect(){

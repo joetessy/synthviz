@@ -39,16 +39,16 @@ export const synthView = {
         'release': function(v){
           switch(this.$[0].dataset.action){
             case 'attack':
-              jQuery.event.trigger('setAttack', v / 100);
+              jQuery.event.trigger('setAttack', 5 * v / 100);
               break;
             case 'decay':
-              jQuery.event.trigger('setDecay', v / 100);
+              jQuery.event.trigger('setDecay', 5 * v / 100);
               break;
             case 'sustain':
               jQuery.event.trigger('setSustain', (v / 100 * .5));
               break;
             case 'release':
-              jQuery.event.trigger('setRelease', v / 100);
+              jQuery.event.trigger('setRelease', 5 * v / 100);
               break;
           }
         }

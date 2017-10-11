@@ -173,16 +173,16 @@ const synthView = {
         'release': function(v){
           switch(this.$[0].dataset.action){
             case 'attack':
-              jQuery.event.trigger('setAttack', v / 100);
+              jQuery.event.trigger('setAttack', 5 * v / 100);
               break;
             case 'decay':
-              jQuery.event.trigger('setDecay', v / 100);
+              jQuery.event.trigger('setDecay', 5 * v / 100);
               break;
             case 'sustain':
               jQuery.event.trigger('setSustain', (v / 100 * .5));
               break;
             case 'release':
-              jQuery.event.trigger('setRelease', v / 100);
+              jQuery.event.trigger('setRelease', 5 * v / 100);
               break;
           }
         }
@@ -245,14 +245,16 @@ const synthView = {
 
 "use strict";
 /* harmony export (immutable) */ __webpack_exports__["a"] = makeOscillator;
-function makeOscillator({context, frequency}){
+function makeOscillator({context, frequency, type}){
   var oscillator = context.createOscillator();
   let input = oscillator,
       output = oscillator;
   return {
     oscillator,
     frequency,
+    type,
     start(){
+      oscillator.type = this.type;
       oscillator.frequency.value = this.frequency;
       oscillator.start();
     },
@@ -291,11 +293,13 @@ function makeSynth(){
     activeVoices: {},
     destination: context.destination,
     volume,
-    envelope: {attack: 0, decay: 0, sustain: .5, release: .1},
+    osc1type: 'sawtooth',
+    envelope: {attack: 0, decay: 0, sustain: .5, release: .5},
     start(key){
       let n = key.n;
       let frequency = this.calculateFrequency(n);
-      this.activeVoices[n] = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__voice_js__["a" /* makeVoice */])({context, frequency, volume});
+      let type = this.osc1type;
+      this.activeVoices[n] = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__voice_js__["a" /* makeVoice */])({context, frequency, volume, type});
       this.activeVoices[n].connect();
       let envelope = this.envelope;
       this.activeVoices[n].start(envelope);
@@ -360,11 +364,11 @@ document.addEventListener('DOMContentLoaded', function(){
 
 
 
-function makeVoice({context, frequency, volume}){
+function makeVoice({context, frequency, volume, type}){
   return {
     frequency,
     context,
-    oscillator: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__oscillator_js__["a" /* default */])({context, frequency}),
+    oscillator: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__oscillator_js__["a" /* default */])({context, frequency, type}),
     amp: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__amp_js__["a" /* default */])({context}),
     envelope: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__envelope_js__["a" /* default */])({context}),
     connect(){

@@ -11,11 +11,13 @@ export default function makeSynth(){
     activeVoices: {},
     destination: context.destination,
     volume,
-    envelope: {attack: 0, decay: 0, sustain: .5, release: .1},
+    osc1type: 'sawtooth',
+    envelope: {attack: 0, decay: 0, sustain: .5, release: .5},
     start(key){
       let n = key.n;
       let frequency = this.calculateFrequency(n);
-      this.activeVoices[n] = makeVoice({context, frequency, volume});
+      let type = this.osc1type;
+      this.activeVoices[n] = makeVoice({context, frequency, volume, type});
       this.activeVoices[n].connect();
       let envelope = this.envelope;
       this.activeVoices[n].start(envelope);
