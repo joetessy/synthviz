@@ -75,6 +75,7 @@ export default function makeSynth(){
     },
 
     changeOctave(octave, osc){
+      debugger;
       let changedOct;
       if (osc === 1){
         changedOct = 1;

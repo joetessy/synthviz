@@ -199,19 +199,23 @@ const synthView = {
   pushKey(n){
     let keyString = `div[data-key="${n}"]`;
     let key = document.querySelector(keyString);
-    if (Array.from(key.classList).includes('black')){
-      key.classList.add('playblack');
-    } else {
-      key.classList.add('playwhite');
+    if (key !== null){      
+      if (Array.from(key.classList).includes('black')){
+        key.classList.add('playblack');
+      } else {
+        key.classList.add('playwhite');
+      }
     }
   },
   releaseKey(n){
     let keyString = `div[data-key="${n}"]`;
     let key = document.querySelector(keyString);
-    if (Array.from(key.classList).includes('black')){
-      key.classList.remove('playblack');
-    } else {
-      key.classList.remove('playwhite');
+    if (key !== null){
+      if (Array.from(key.classList).includes('black')){
+        key.classList.remove('playblack');
+      } else {
+        key.classList.remove('playwhite');
+      }
     }
   },
   setUpKnobs(){
@@ -499,6 +503,7 @@ function makeSynth(){
     },
 
     changeOctave(octave, osc){
+      debugger;
       let changedOct;
       if (osc === 1){
         changedOct = 1;
