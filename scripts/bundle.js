@@ -503,7 +503,6 @@ function makeSynth(){
     },
 
     changeOctave(octave, osc){
-      debugger;
       let changedOct;
       if (osc === 1){
         changedOct = 1;
@@ -661,6 +660,16 @@ function makeVoice({
     stop(releaseTime){
       this.envelope1.envOff(releaseTime);
       this.envelope2.envOff(releaseTime);
+      setTimeout(() => {
+        this.oscillator1.oscillator.disconnect(this.amp1.gain);
+        this.oscillator2.oscillator.disconnect(this.amp2.gain);
+
+        this.amp1.gain.disconnect(this.filter1.filter);
+        this.amp2.gain.disconnect(this.filter2.filter);
+
+        this.filter1.filter.disconnect(volume.gain);
+        this.filter2.filter.disconnect(volume.gain);
+      }, releaseTime * 1000);
     }
   };
 }
