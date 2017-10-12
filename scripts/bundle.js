@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 6);
+/******/ 	return __webpack_require__(__webpack_require__.s = 7);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -136,7 +136,7 @@ function makeEnvelope({context}){
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__synth_js__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__synth_js__ = __webpack_require__(6);
 
   var synth = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__synth_js__["a" /* default */])();
 
@@ -176,14 +176,6 @@ const synthView = {
     }
     this.synth.changeOctave(oct1, 1);
     this.synth.changeOctave(oct2, 2);
-    // let codes = Object.keys(this.keys);
-    // for (let i = 0; i < codes.length; i++){
-    //   if (obj.dir === 'up'){
-    //     this.keys[codes[i]].n += 12;
-    //   } else {
-    //     this.keys[codes[i]].n -= 12;
-    //   }
-    // }
   },
   increment(val){
     let keys = Object.keys(this.keys);
@@ -425,6 +417,34 @@ function makeBiquadFilter({context, cutoff}){
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony export (immutable) */ __webpack_exports__["a"] = makeLFO;
+function makeLFO({context, frequency, gain}){
+  let lfo = context.createOscillator(),
+      input = lfo,
+      output = lfo,
+      lfoFrequency = lfo.frequency;
+      lfoFrequency.value = frequency;
+  return {
+    lfo,
+    lfoFrequency,
+    input,
+    output,
+    connect(node){
+      if (node.hasOwnProperty('input')) {
+        output.connect(node.input);
+      } else {
+        output.connect(node);
+      }
+    }
+  };
+}
+
+
+/***/ }),
+/* 5 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
 /* harmony export (immutable) */ __webpack_exports__["a"] = makeOscillator;
 function makeOscillator({context, n, frequency, type, oct}){
   var oscillator = context.createOscillator();
@@ -465,12 +485,12 @@ function makeOscillator({context, n, frequency, type, oct}){
 
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (immutable) */ __webpack_exports__["a"] = makeSynth;
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__voice_js__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__voice_js__ = __webpack_require__(8);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__envelope_js__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__amp_js__ = __webpack_require__(0);
 
@@ -627,7 +647,7 @@ function makeSynth(){
 
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -644,15 +664,17 @@ document.addEventListener('DOMContentLoaded', function(){
 
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (immutable) */ __webpack_exports__["a"] = makeVoice;
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__oscillator_js__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__oscillator_js__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__amp_js__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__envelope_js__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__biquadfilter_js__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__lfo_js__ = __webpack_require__(4);
+
 
 
 
@@ -666,7 +688,8 @@ function makeVoice({
   return {
     frequency,
     context,
-    n,
+    lfo: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4__lfo_js__["a" /* default */])({context, frequency: 20}),
+    lfoGain: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__amp_js__["a" /* default */])({context, vol: 20}),
     oscillator1: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__oscillator_js__["a" /* default */])({context, n, frequency, oct: oct1, type: type1}),
     oscillator2: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__oscillator_js__["a" /* default */])({context, n, frequency, oct: oct2, type: type2}),
     amp1: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__amp_js__["a" /* default */])({context, vol: vol1}),
@@ -676,6 +699,10 @@ function makeVoice({
     filter1: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__biquadfilter_js__["a" /* default */])({context, cutoff: cutoff1, res: res1}),
     filter2: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__biquadfilter_js__["a" /* default */])({context, cutoff: cutoff2, res: res2}),
     connect(){
+      this.lfo.connect(this.lfoGain);
+      this.lfoGain.connect(this.oscillator1.oscillator.frequency);
+      this.lfoGain.connect(this.oscillator2.oscillator.frequency);
+
       this.envelope1.connect(this.amp1.amplitude);
       this.envelope2.connect(this.amp2.amplitude);
 
@@ -687,6 +714,7 @@ function makeVoice({
 
       this.filter1.connect(volume);
       this.filter2.connect(volume);
+
     },
 
     changeFrequency(freq){
@@ -700,6 +728,7 @@ function makeVoice({
       this.envelope2.envOn(envelope.attack, envelope.decay,
           envelope.sustain, this.amp2.amplitude.value);
 
+      this.lfo.lfo.start();
       this.oscillator1.start();
       this.oscillator2.start();
 

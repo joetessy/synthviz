@@ -2,6 +2,7 @@ import oscillator from './oscillator.js';
 import amp from './amp.js';
 import makeEnvelope from './envelope.js';
 import makeBiquadFilter from './biquadfilter.js';
+import lfo from './lfo.js';
 
 
 
@@ -11,7 +12,8 @@ export function makeVoice({
   return {
     frequency,
     context,
-    n,
+    lfo: lfo({context, frequency: 20}),
+    lfoGain: amp({context, vol: 20}),
     oscillator1: oscillator({context, n, frequency, oct: oct1, type: type1}),
     oscillator2: oscillator({context, n, frequency, oct: oct2, type: type2}),
     amp1: amp({context, vol: vol1}),
@@ -21,6 +23,10 @@ export function makeVoice({
     filter1: makeBiquadFilter({context, cutoff: cutoff1, res: res1}),
     filter2: makeBiquadFilter({context, cutoff: cutoff2, res: res2}),
     connect(){
+      this.lfo.connect(this.lfoGain);
+      this.lfoGain.connect(this.oscillator1.oscillator.frequency);
+      this.lfoGain.connect(this.oscillator2.oscillator.frequency);
+
       this.envelope1.connect(this.amp1.amplitude);
       this.envelope2.connect(this.amp2.amplitude);
 
@@ -32,6 +38,7 @@ export function makeVoice({
 
       this.filter1.connect(volume);
       this.filter2.connect(volume);
+
     },
 
     changeFrequency(freq){
@@ -45,6 +52,7 @@ export function makeVoice({
       this.envelope2.envOn(envelope.attack, envelope.decay,
           envelope.sustain, this.amp2.amplitude.value);
 
+      this.lfo.lfo.start();
       this.oscillator1.start();
       this.oscillator2.start();
 

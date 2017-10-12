@@ -37,14 +37,6 @@ export const synthView = {
     }
     this.synth.changeOctave(oct1, 1);
     this.synth.changeOctave(oct2, 2);
-    // let codes = Object.keys(this.keys);
-    // for (let i = 0; i < codes.length; i++){
-    //   if (obj.dir === 'up'){
-    //     this.keys[codes[i]].n += 12;
-    //   } else {
-    //     this.keys[codes[i]].n -= 12;
-    //   }
-    // }
   },
   increment(val){
     let keys = Object.keys(this.keys);
