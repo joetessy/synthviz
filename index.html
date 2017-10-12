@@ -13,6 +13,7 @@
 </head>
 
 <body>
+    <canvas id='canvas'></canvas>
     <header>
     </header>
     <div class='envelope-controls'>
@@ -83,7 +84,7 @@
           <div class='balance'>
             <div class='control osccontrol'>
               <h4>Volume</h4>
-              <input type="text" value="100" class="knob"
+              <input type="text" value="50" class="knob"
               data-osc='1'
               data-action='oscVolume'
               data-width="50"
@@ -108,27 +109,14 @@
               data-angleOffset="180"/>
             </div>
             <div class='control osccontrol'>
-              <h4>Cutoff Freq</h4>
-                <input type="text" value="2" class="knob"
+              <h4>Cutoff Freq (Hz)</h4>
+                <input type="text" value="22" class="knob"
                 data-osc='1'
                 data-action='cutoff'
                 data-width="50"
-                data-min="30"
-                data-max="22000"
-                data-height='50'
-                data-fgColor="#ff00f7"
-                data-skin="tron"
-                data-thickness=".2"
-                data-angleOffset="180"/>
-            </div>
-            <div class='control osccontrol'>
-              <h4>Res</h4>
-                <input type="text" value="2" class="knob"
-                data-osc='1'
-                data-action='res'
-                data-width="50"
-                data-min="1"
-                data-max="4"
+                data-step=".01"
+                data-min="0"
+                data-max="22"
                 data-height='50'
                 data-fgColor="#ff00f7"
                 data-skin="tron"
@@ -159,7 +147,7 @@
           <div class='balance'>
             <div class='control osccontrol'>
               <h4>Volume</h4>
-              <input type="text" value="0" class="knob"
+              <input type="text" value="25" class="knob"
               data-osc='2'
               data-action='oscVolume'
               data-width="50"
@@ -184,27 +172,15 @@
               data-angleOffset="180"/>
             </div>
             <div class='control osccontrol'>
-              <h4>Cutoff Freq</h4>
-                <input type="text" value="2" class="knob"
+              <h4>Cutoff Freq (Hz)</h4>
+                <input
+                type="text" value="22" class="knob"
                 data-osc='2'
                 data-action='cutoff'
                 data-width="50"
-                data-min="1"
-                data-max="4"
-                data-height='50'
-                data-fgColor="#ff00f7"
-                data-skin="tron"
-                data-thickness=".2"
-                data-angleOffset="180"/>
-            </div>
-            <div class='control osccontrol'>
-              <h4>Res</h4>
-                <input type="text" value="2" class="knob"
-                data-osc='2'
-                data-action='res'
-                data-width="50"
-                data-min="1"
-                data-max="4"
+                data-step='.01'
+                data-min="0"
+                data-max="22"
                 data-height='50'
                 data-fgColor="#ff00f7"
                 data-skin="tron"

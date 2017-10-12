@@ -40,16 +40,16 @@ export const synthView = {
         'release': function(v){
           switch(this.$[0].dataset.action){
             case 'attack':
-              jQuery.event.trigger('setAttack', 5 * v / 100);
+              jQuery.event.trigger('setAttack', 3 * v / 100);
               break;
             case 'decay':
-              jQuery.event.trigger('setDecay', 5 * v / 100);
+              jQuery.event.trigger('setDecay', 3 * v / 100);
               break;
             case 'sustain':
               jQuery.event.trigger('setSustain', (v / 100 * .5));
               break;
             case 'release':
-              jQuery.event.trigger('setRelease', 5 * v / 100);
+              jQuery.event.trigger('setRelease', 3 * v / 100);
               break;
             case 'oscVolume':
               if (this.$[0].dataset.osc === '1'){
@@ -63,6 +63,13 @@ export const synthView = {
                 that.synth.changeOctave(v, 1);
               } else {
                 that.synth.changeOctave(v, 2);
+              }
+              break;
+            case 'cutoff':
+              if (this.$[0].dataset.osc === '1'){
+                that.synth.changeCutoff(v, that.synth.osc1res, 1);
+              } else {
+                that.synth.changeCutoff(v, that.synth.osc2res, 2);
               }
               break;
           }
@@ -127,7 +134,9 @@ export const synthView = {
       this.synth.envelope.release = value + .01;
     }.bind(this));
 
-    this.synth.volume.connect(this.synth.context.destination);
+
+    this.synth.volume.connect(this.synth.compressor);
+    this.synth.compressor.connect(this.synth.context.destination);
 
   },
 };

@@ -1,6 +1,6 @@
 export default function makeAmp({context, vol}){
   let gain = context.createGain();
-  if (vol === undefined) vol = 0.5;
+  if (vol === undefined) vol = .01;
   let input = gain,
       output = gain,
       amplitude = gain.gain;

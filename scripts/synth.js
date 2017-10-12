@@ -4,6 +4,12 @@ import amp from './amp.js';
 
 export default function makeSynth(){
   var context = new AudioContext();
+  var compressor = context.createDynamicsCompressor();
+  compressor.threshold.value = -50;
+  compressor.knee.value = 40;
+  compressor.ratio.value = 12;
+  compressor.attack.value = .25;
+  compressor.release.value = 0.25;
   var volume = amp({context});
 
   return {
@@ -11,10 +17,13 @@ export default function makeSynth(){
     activeVoices: {},
     destination: context.destination,
     volume,
+    compressor,
     osc1type: 'sine',
     osc2type: 'sine',
+    osc1cutoff: 22,
+    osc2cutoff: 22,
     osc1vol: 0.5,
-    osc2vol: 0,
+    osc2vol: 0.25,
     osc1oct: 1,
     osc2oct: 2,
     envelope: {attack: 0, decay: 0, sustain: .5, release: .5},
@@ -23,47 +32,74 @@ export default function makeSynth(){
       let frequency = this.calculateFrequency(n);
       let type1 = this.osc1type, type2 = this.osc2type,
           vol1 = this.osc1vol, vol2 = this.osc2vol,
-          oct1 = this.osc1oct, oct2 = this.osc2oct;
+          oct1 = this.osc1oct, oct2 = this.osc2oct,
+          cutoff1 = this.osc1cutoff, cutoff2 = this.osc2cutoff,
+          res1 = this.osc1res, res2 = this.osc2res;
       this.activeVoices[n] =
-        makeVoice({context, frequency, volume, type1, type2, vol1, vol2, oct1, oct2});
+        makeVoice({
+          context, frequency, volume, type1, type2,
+          vol1, vol2, oct1, oct2, cutoff1, cutoff2, res1, res2});
       this.activeVoices[n].connect();
       let envelope = this.envelope;
       this.activeVoices[n].start(envelope);
     },
 
     changeOscVolume(vol, osc){
+      let changedOsc;
       if (osc === 1){
+        changedOsc = 1;
         this.osc1vol = vol;
       } else {
+        changedOsc = 2;
         this.osc2vol = vol;
       }
       let voiceKeys = Object.keys(this.activeVoices);
       for (let i = 0; i < voiceKeys.length; i++){
-        this.activeVoices[voiceKeys[i]].amp1.changeAmplitude(this.osc1vol);
-        this.activeVoices[voiceKeys[i]].amp2.changeAmplitude(this.osc2vol);
+        if (changedOsc === 1){
+          this.activeVoices[voiceKeys[i]].amp1.changeAmplitude(this.osc1vol);
+        } else {
+          this.activeVoices[voiceKeys[i]].amp2.changeAmplitude(this.osc2vol);
+        }
       }
     },
-    //
-    // changeOscProp(prop, val){
-    //   let voiceKeys = Object.keys(this.activeVoices);
-    //   for (let i = 0; i < voiceKeys.length; i++){
-    //     this.activeVoices[voiceKeys[i]][prop] = val;
-    //     this.activeVoices[voiceKeys[i]][prop] = val;
-    //   }
-    // },
+
     changeOctave(octave, osc){
+      let changedOct;
       if (osc === 1){
+        changedOct = 1;
         this.osc1oct = octave;
       } else {
+        changedOct = 2;
         this.osc2oct = octave;
+      }
+      let voiceKeys = Object.keys(this.activeVoices);
+      for (let i = 0; i < voiceKeys.length; i++){
+        if (changedOct === 1){
+          this.activeVoices[voiceKeys[i]].oscillator1.changeOctave(this.osc1oct);
+        } else {
+          this.activeVoices[voiceKeys[i]].oscillator2.changeOctave(this.osc2oct);
+        }
+      }
+    },
+
+    changeCutoff(freq, res, osc){
+      let changedOsc;
+      if (osc === 1){
+        changedOsc = 1;
+        this.osc1cutoff = freq;
+      } else {
+        changedOsc = 2;
+        this.osc2cutoff = freq;
       }
 
       let voiceKeys = Object.keys(this.activeVoices);
       for (let i = 0; i < voiceKeys.length; i++){
-          this.activeVoices[voiceKeys[i]].oscillator1.changeOctave(this.osc1oct);
-          this.activeVoices[voiceKeys[i]].oscillator2.changeOctave(this.osc2oct);
-
+        if (changedOsc === 1){
+          this.activeVoices[voiceKeys[i]].filter1.changeFilter(freq);
+        } else {
+          this.activeVoices[voiceKeys[i]].filter2.changeFilter(freq);
         }
+      }
     },
 
     changeType(type, osc){
@@ -78,7 +114,8 @@ export default function makeSynth(){
     stop(n){
       if (!this.activeVoices[n]);
       n = this.handleOctaveChange(n);
-      this.activeVoices[n].stop(this.envelope.release);
+      let voice = this.activeVoices[n];
+      voice.stop(this.envelope.release);
       delete this.activeVoices[n];
     },
 

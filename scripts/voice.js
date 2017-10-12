@@ -1,10 +1,13 @@
 import oscillator from './oscillator.js';
 import amp from './amp.js';
 import makeEnvelope from './envelope.js';
+import makeBiquadFilter from './biquadfilter.js';
+
 
 
 export function makeVoice({
-  context, frequency, volume, type1, type2, vol1, vol2, oct1, oct2}){
+  context, frequency, volume, type1, type2, vol1, vol2, oct1, oct2,
+    cutoff1, cutoff2, res1, res2}){
   return {
     frequency,
     context,
@@ -14,15 +17,22 @@ export function makeVoice({
     amp2: amp({context, vol: vol2}),
     envelope1: makeEnvelope({context}),
     envelope2: makeEnvelope({context}),
+    filter1: makeBiquadFilter({context, cutoff: cutoff1, res: res1}),
+    filter2: makeBiquadFilter({context, cutoff: cutoff2, res: res2}),
     connect(){
-      this.oscillator1.connect(this.amp1);
-      this.oscillator2.connect(this.amp2);
-
       this.envelope1.connect(this.amp1.amplitude);
       this.envelope2.connect(this.amp2.amplitude);
 
-      this.amp1.connect(volume);
-      this.amp2.connect(volume);
+      this.oscillator1.connect(this.amp1);
+      this.oscillator2.connect(this.amp2);
+
+      this.amp1.connect(this.filter1);
+      this.amp2.connect(this.filter2);
+
+      this.filter1.connect(volume);
+      this.filter2.connect(volume);
+
+
     },
     start(envelope){
       this.envelope1.envOn(envelope.attack, envelope.decay,

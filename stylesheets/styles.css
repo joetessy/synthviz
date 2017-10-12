@@ -26,11 +26,12 @@ h4{
 
 .envelope-controls {
   display: flex;
-  width: 368px;
+  width: 435px;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
 }
+
 
 .control {
   display: flex;
@@ -93,4 +94,11 @@ h4{
 
 .types img {
   height:20px;
+}
+
+#canvas{
+  z-index: -1;
+  position: absolute;
+  height: 100vh;
+  width: 100vw;
 }
