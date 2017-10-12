@@ -16,50 +16,53 @@
     <canvas id='canvas'></canvas>
     <header>
     </header>
-    <div class='envelope-controls'>
-      <div class='control'>
-        <h4> Attack </h4>
-        <input type="text" value="0" class="knob"
-        data-action='attack'
-        data-width="50"
-        data-height='50'
-        data-fgColor="#ff00f7"
-        data-skin="tron"
-        data-thickness=".2"
-        data-angleOffset="180"/>
-      </div>
-      <div class='control'>
-        <h4> Decay </h4>
+    <div class='envelope'>
+      <h3>ENVELOPE</h3>
+      <div class='envelope-controls'>
+        <div class='control'>
+          <h4> Attack </h4>
           <input type="text" value="0" class="knob"
-          data-action='decay'
+          data-action='attack'
           data-width="50"
           data-height='50'
           data-fgColor="#ff00f7"
           data-skin="tron"
           data-thickness=".2"
           data-angleOffset="180"/>
-      </div>
-      <div class='control'>
-        <h4> Sustain </h4>
-          <input type="text" value="100" class="knob"
-          data-action='sustain'
+        </div>
+        <div class='control'>
+          <h4> Decay </h4>
+            <input type="text" value="0" class="knob"
+            data-action='decay'
+            data-width="50"
+            data-height='50'
+            data-fgColor="#ff00f7"
+            data-skin="tron"
+            data-thickness=".2"
+            data-angleOffset="180"/>
+        </div>
+        <div class='control'>
+          <h4> Sustain </h4>
+            <input type="text" value="100" class="knob"
+            data-action='sustain'
+            data-width="50"
+            data-height='50'
+            data-fgColor="#ff00f7"
+            data-skin="tron"
+            data-thickness=".2"
+            data-angleOffset="180"/>
+        </div>
+        <div class='control'>
+        <h4> Release </h4>
+          <input type="text" value="10" class="knob"
+          data-action='release'
           data-width="50"
           data-height='50'
           data-fgColor="#ff00f7"
           data-skin="tron"
           data-thickness=".2"
           data-angleOffset="180"/>
-      </div>
-      <div class='control'>
-      <h4> Release </h4>
-        <input type="text" value="10" class="knob"
-        data-action='release'
-        data-width="50"
-        data-height='50'
-        data-fgColor="#ff00f7"
-        data-skin="tron"
-        data-thickness=".2"
-        data-angleOffset="180"/>
+        </div>
       </div>
     </div>
     <div class='oscillators'>
@@ -109,7 +112,7 @@
               data-angleOffset="180"/>
             </div>
             <div class='control osccontrol'>
-              <h4>Cutoff Freq (Hz)</h4>
+              <h4>Cutoff (kHz)</h4>
                 <input type="text" value="22" class="knob"
                 data-osc='1'
                 data-action='cutoff'
@@ -172,7 +175,7 @@
               data-angleOffset="180"/>
             </div>
             <div class='control osccontrol'>
-              <h4>Cutoff Freq (Hz)</h4>
+              <h4>Cutoff (kHz)</h4>
                 <input
                 type="text" value="22" class="knob"
                 data-osc='2'
