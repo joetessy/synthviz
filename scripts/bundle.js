@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 5);
+/******/ 	return __webpack_require__(__webpack_require__.s = 6);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -136,28 +136,30 @@ function makeEnvelope({context}){
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__synth_js__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__synth_js__ = __webpack_require__(5);
 
+  var synth = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__synth_js__["a" /* default */])();
 
 const synthView = {
-  synth: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__synth_js__["a" /* default */])(),
+  synth,
+  inc: 0,
   keys: {
-    65: { down: false, n: 40, action: (n) => synthView.synth.start(n) },
-    87: { down: false, n: 41, action: (n) => synthView.synth.start(n) },
-    83: { down: false, n: 42, action: (n) => synthView.synth.start(n) },
-    69: { down: false, n: 43, action: (n) => synthView.synth.start(n) },
-    68: { down: false, n: 44, action: (n) => synthView.synth.start(n) },
-    70: { down: false, n: 45, action: (n) => synthView.synth.start(n) },
-    84: { down: false, n: 46, action: (n) => synthView.synth.start(n) },
-    71: { down: false, n: 47, action: (n) => synthView.synth.start(n) },
-    89: { down: false, n: 48, action: (n) => synthView.synth.start(n) },
-    72: { down: false, n: 49, action: (n) => synthView.synth.start(n) },
-    85: { down: false, n: 50, action: (n) => synthView.synth.start(n) },
-    74: { down: false, n: 51, action: (n) => synthView.synth.start(n) },
-    75: { down: false, n: 52, action: (n) => synthView.synth.start(n) },
-    79: { down: false, n: 53, action: (n) => synthView.synth.start(n) },
-    76: { down: false, n: 54, action: (n) => synthView.synth.start(n) },
-    80: { down: false, n: 55, action: (n) => synthView.synth.start(n) },
+    65: { down: false, n: 40, action: (n) => synthView.startSynth(n) },
+    87: { down: false, n: 41, action: (n) => synthView.startSynth(n) },
+    83: { down: false, n: 42, action: (n) => synthView.startSynth(n) },
+    69: { down: false, n: 43, action: (n) => synthView.startSynth(n) },
+    68: { down: false, n: 44, action: (n) => synthView.startSynth(n) },
+    70: { down: false, n: 45, action: (n) => synthView.startSynth(n) },
+    84: { down: false, n: 46, action: (n) => synthView.startSynth(n) },
+    71: { down: false, n: 47, action: (n) => synthView.startSynth(n) },
+    89: { down: false, n: 48, action: (n) => synthView.startSynth(n) },
+    72: { down: false, n: 49, action: (n) => synthView.startSynth(n) },
+    85: { down: false, n: 50, action: (n) => synthView.startSynth(n) },
+    74: { down: false, n: 51, action: (n) => synthView.startSynth(n) },
+    75: { down: false, n: 52, action: (n) => synthView.startSynth(n) },
+    79: { down: false, n: 53, action: (n) => synthView.startSynth(n) },
+    76: { down: false, n: 54, action: (n) => synthView.startSynth(n) },
+    80: { down: false, n: 55, action: (n) => synthView.startSynth(n) },
     90: { down: false, type: 'octave', dir: 'down',
       action: (n) => synthView.octave(n) },
     88: { down: false, type: 'octave', dir: 'up',
@@ -173,13 +175,48 @@ const synthView = {
       }
     }
   },
+  increment(val){
+    let keys = Object.keys(this.keys);
+    let delta = val - this.inc;
+    for (let i = 0; i < keys.length; i++){
+      let currKey = keys[i];
+      if (this.keys[currKey].n) this.keys[currKey].n += delta;
+    }
+    this.inc += delta;
+
+  },
+  startSynth(n){
+    this.synth.start(n);
+    this.pushKey(n.n);
+  },
+  pushKey(n){
+    let keyString = `div[data-key="${n}"]`;
+    let key = document.querySelector(keyString);
+    if (Array.from(key.classList).includes('black')){
+      key.classList.add('playblack');
+    } else {
+      key.classList.add('playwhite');
+    }
+  },
+  releaseKey(n){
+    let keyString = `div[data-key="${n}"]`;
+    let key = document.querySelector(keyString);
+    if (Array.from(key.classList).includes('black')){
+      key.classList.remove('playblack');
+    } else {
+      key.classList.remove('playwhite');
+    }
+  },
   setUpKnobs(){
     let that = this;
     $(".knob").knob({
         'release': function(v){
           switch(this.$[0].dataset.action){
+            case 'tune':
+              that.increment(v);
+              break;
             case 'attack':
-              jQuery.event.trigger('setAttack', 3 * v / 100);
+              jQuery.event.trigger('setAttack', 2 * v / 100);
               break;
             case 'decay':
               jQuery.event.trigger('setDecay', 3 * v / 100);
@@ -188,7 +225,7 @@ const synthView = {
               jQuery.event.trigger('setSustain', (v / 100 * .5));
               break;
             case 'release':
-              jQuery.event.trigger('setRelease', 3 * v / 100);
+              jQuery.event.trigger('setRelease', 2 * v / 100);
               break;
             case 'oscVolume':
               if (this.$[0].dataset.osc === '1'){
@@ -252,10 +289,10 @@ const synthView = {
         if (keyInfo.type === 'octave' ) return;
         let n = keyInfo.n;
         this.synth.stop(n);
+        this.releaseKey(n);
       }
 
     });
-    let synth = this.synth;
 
     $(document).bind('setAttack', function (_, value) {
       this.synth.envelope.attack = value;
@@ -285,6 +322,41 @@ const synthView = {
 
 /***/ }),
 /* 3 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (immutable) */ __webpack_exports__["a"] = makeBiquadFilter;
+function makeBiquadFilter({context, cutoff}){
+  if (cutoff === undefined) cutoff = 22;
+  let filter = context.createBiquadFilter();
+  filter.type = 'lowshelf';
+  let input = filter,
+      output = filter,
+      frequency = filter.frequency;
+      filter.frequency.value = cutoff * 1000;
+      filter.gain.value = 20;
+
+  return {
+    filter,
+    frequency,
+    input,
+    output,
+    changeFilter(newFreq){
+      this.filter.frequency.value = newFreq;
+    },
+    connect(node){
+      if (node.hasOwnProperty('input')) {
+        this.output.connect(node.input);
+      } else {
+        this.output.connect(node);
+      }
+    }
+  };
+}
+
+
+/***/ }),
+/* 4 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -324,12 +396,12 @@ function makeOscillator({context, frequency, type, oct}){
 
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (immutable) */ __webpack_exports__["a"] = makeSynth;
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__voice_js__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__voice_js__ = __webpack_require__(7);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__envelope_js__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__amp_js__ = __webpack_require__(0);
 
@@ -475,7 +547,7 @@ function makeSynth(){
 
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -492,15 +564,15 @@ document.addEventListener('DOMContentLoaded', function(){
 
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (immutable) */ __webpack_exports__["a"] = makeVoice;
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__oscillator_js__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__oscillator_js__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__amp_js__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__envelope_js__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__biquadfilter_js__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__biquadfilter_js__ = __webpack_require__(3);
 
 
 
@@ -550,41 +622,6 @@ function makeVoice({
     stop(releaseTime){
       this.envelope1.envOff(releaseTime);
       this.envelope2.envOff(releaseTime);
-    }
-  };
-}
-
-
-/***/ }),
-/* 7 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (immutable) */ __webpack_exports__["a"] = makeBiquadFilter;
-function makeBiquadFilter({context, cutoff}){
-  if (cutoff === undefined) cutoff = 22;
-  let filter = context.createBiquadFilter();
-  filter.type = 'lowshelf';
-  let input = filter,
-      output = filter,
-      frequency = filter.frequency;
-      filter.frequency.value = cutoff * 1000;
-      filter.gain.value = 20;
-
-  return {
-    filter,
-    frequency,
-    input,
-    output,
-    changeFilter(newFreq){
-      this.filter.frequency.value = newFreq;
-    },
-    connect(node){
-      if (node.hasOwnProperty('input')) {
-        this.output.connect(node.input);
-      } else {
-        this.output.connect(node);
-      }
     }
   };
 }

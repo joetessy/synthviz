@@ -107,3 +107,69 @@ h4{
   height: 100vh;
   width: 100vw;
 }
+
+.keyboard{
+  justify-content: flex-end;
+  display: flex;
+
+}
+
+.black {
+  background-color: black;
+  border: 1px solid #ff00f7;
+  width: 20px;
+  height: 120px;
+  position: absolute;
+  left: 10px;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.white {
+  background-color: #ff00f7;
+  border: 1px solid black;
+  position: relative;
+  width: 20px;
+  display: flex;
+  height: 180px;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.black .boardkey {
+  color: #ff00f7;
+}
+
+.boardkey {
+  text-align: center;
+  color: black;
+  margin-bottom: 5px;
+}
+
+.playblack{
+  background-color: #00ffed;
+  color: black;
+  border: 1px solid black;
+}
+
+.playwhite{
+  background-color: #00ffed;
+  border-right: 1px solid #ff00f7;
+  border-bottom: 1px solid #ff00f7;
+}
+
+.playblack .boardkey{
+  color: black;
+}
+
+.right-controls{
+  display: flex;
+  justify-content: flex-end;
+}
+
+.tuner{
+  margin: 0 20px;
+}
