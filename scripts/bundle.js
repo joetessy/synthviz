@@ -191,6 +191,23 @@ const synthView = {
     }
     this.synth.updateFrequencies(diff);
     this.inc = val;
+    this.updateKeyLettering();
+  },
+  updateKeyLettering(){
+    let keyLetters = ["A","W","S","E","D","F","T","G",
+                      "Y","H","U","J","K","O","L","P"];
+    let keyValues = Object.keys(this.keys);
+    let firstKey = this.keys[keyValues[0]].n;
+    let keyDivs = document.querySelectorAll('div[data-keynum]');
+
+    for (let i = 0; i < keyDivs.length; i++){
+      keyDivs[i].innerHTML = ("");
+    }
+    for (let i = 0; i < keyLetters.length; i++){
+      let keyString = `div[data-keynum="${i + firstKey}"]`;
+      let keyDiv = document.querySelector(keyString);
+      keyDiv.innerHTML = (keyLetters[i]);
+    }
   },
   startSynth(n){
     this.synth.start(n);
@@ -199,7 +216,7 @@ const synthView = {
   pushKey(n){
     let keyString = `div[data-key="${n}"]`;
     let key = document.querySelector(keyString);
-    if (key !== null){      
+    if (key !== null){
       if (Array.from(key.classList).includes('black')){
         key.classList.add('playblack');
       } else {
@@ -207,6 +224,7 @@ const synthView = {
       }
     }
   },
+
   releaseKey(n){
     let keyString = `div[data-key="${n}"]`;
     let key = document.querySelector(keyString);
@@ -218,6 +236,21 @@ const synthView = {
       }
     }
   },
+
+  setUpLFO(){
+    document.querySelector('.lfo-on-off').addEventListener('click', function(e){
+      if (Array.from(e.currentTarget.classList).includes('off')){
+        e.currentTarget.classList.remove('off');
+        e.currentTarget.classList.add('on');
+        e.currentTarget.innerHTML = 'ON';
+      } else {
+        e.currentTarget.classList.add('off');
+        e.currentTarget.classList.remove('on');
+        e.currentTarget.innerHTML = 'OFF';
+      }
+    });
+  },
+
   setUpKnobs(){
     let that = this;
     $(".knob").knob({
@@ -278,9 +311,11 @@ const synthView = {
       }.bind(this));
     });
   },
+
   start(){
     let keys = this.keys;
     this.setUpKnobs();
+    this.setUpLFO();
     this.setUpOscillatorTypes();
     document.addEventListener('keydown', e => {
       let keyInfo = keys[e.keyCode];

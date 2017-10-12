@@ -47,6 +47,9 @@ h4{
   user-select: none;
   cursor: pointer;
 }
+.knob{
+  cursor: pointer;
+}
 
 .knob:focus {
   outline: 0;
@@ -172,4 +175,28 @@ h4{
 
 .tuner{
   margin: 0 20px;
+}
+
+.lfo-on-off{
+  cursor: pointer;
+  font-size: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50px;
+  width: 50px;
+  border-radius: 100%;
+  user-select: none;
+  box-sizing: border-box;
+}
+
+
+.off {
+  border: 5px solid white;
+  color: white;
+}
+
+.on {
+  border: 5px solid #ff00f7;
+  color: #ff00f7;
 }
