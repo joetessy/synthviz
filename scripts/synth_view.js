@@ -43,13 +43,27 @@ export const synthView = {
 
     for (let i = 0; i < keys.length; i++){
       let currKey = keys[i];
+      if (!this.keys[currKey].incremented){
+        this.keys[currKey].origin = this.keys[currKey].n;
+      }
       if (this.synth.activeVoices[this.keys[currKey].n]){
         this.keys[currKey].incremented = true;
       }
-      this.keys[currKey].lastN = this.keys[currKey].n;
+
+
+      // this.keys[currKey].lastN = this.keys[currKey].n;
       let n = this.keys[currKey].n += diff;
       if (n) this.keys[currKey].n = n;
+
+
+
+
     }
+
+
+
+
+
     this.synth.updateFrequencies(diff);
     this.inc = val;
     this.updateKeyLettering();
@@ -197,8 +211,9 @@ export const synthView = {
 
         let n = keyInfo.n;
         if (keyInfo.incremented){
-          this.synth.stop(keyInfo.lastN);
-          this.releaseKey(keyInfo.lastN);
+          debugger;
+          this.synth.stop(keyInfo.origin);
+          this.releaseKey(keyInfo.origin);
           keyInfo.incremented = false;
         } else {
           this.synth.stop(n);
