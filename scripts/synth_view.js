@@ -27,14 +27,24 @@ export const synthView = {
       action: (n) => synthView.octave(n) }
   },
   octave(obj){
-    let codes = Object.keys(this.keys);
-    for (let i = 0; i < codes.length; i++){
-      if (obj.dir === 'up'){
-        this.keys[codes[i]].n += 12;
-      } else {
-        this.keys[codes[i]].n -= 12;
-      }
+    let oct1, oct2;
+    if (obj.dir === 'up'){
+      oct1 = this.synth.osc1oct + 1;
+      oct2 = this.synth.osc2oct + 1;
+    } else {
+      oct1 = this.synth.osc1oct - 1;
+      oct2 = this.synth.osc2oct - 1;
     }
+    this.synth.changeOctave(oct1, 1);
+    this.synth.changeOctave(oct2, 2);
+    // let codes = Object.keys(this.keys);
+    // for (let i = 0; i < codes.length; i++){
+    //   if (obj.dir === 'up'){
+    //     this.keys[codes[i]].n += 12;
+    //   } else {
+    //     this.keys[codes[i]].n -= 12;
+    //   }
+    // }
   },
   increment(val){
     let keys = Object.keys(this.keys);
@@ -49,21 +59,9 @@ export const synthView = {
       if (this.synth.activeVoices[this.keys[currKey].n]){
         this.keys[currKey].incremented = true;
       }
-
-
-      // this.keys[currKey].lastN = this.keys[currKey].n;
       let n = this.keys[currKey].n += diff;
       if (n) this.keys[currKey].n = n;
-
-
-
-
     }
-
-
-
-
-
     this.synth.updateFrequencies(diff);
     this.inc = val;
     this.updateKeyLettering();
@@ -211,7 +209,6 @@ export const synthView = {
 
         let n = keyInfo.n;
         if (keyInfo.incremented){
-          debugger;
           this.synth.stop(keyInfo.origin);
           this.releaseKey(keyInfo.origin);
           keyInfo.incremented = false;
