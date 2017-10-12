@@ -177,13 +177,20 @@ const synthView = {
   },
   increment(val){
     let keys = Object.keys(this.keys);
-    let delta = val - this.inc;
+    let diff = Math.abs(this.inc - val);
+    if (this.inc > val) diff *= -1;
+
     for (let i = 0; i < keys.length; i++){
       let currKey = keys[i];
-      if (this.keys[currKey].n) this.keys[currKey].n += delta;
+      if (this.synth.activeVoices[this.keys[currKey].n]){
+        this.keys[currKey].incremented = true;
+      }
+      this.keys[currKey].lastN = this.keys[currKey].n;
+      let n = this.keys[currKey].n += diff;
+      if (n) this.keys[currKey].n = n;
     }
-    this.inc += delta;
-
+    this.synth.updateFrequencies(diff);
+    this.inc = val;
   },
   startSynth(n){
     this.synth.start(n);
@@ -287,9 +294,16 @@ const synthView = {
         keyInfo.down = false;
         // If octave key, return before stopping synth
         if (keyInfo.type === 'octave' ) return;
+
         let n = keyInfo.n;
-        this.synth.stop(n);
-        this.releaseKey(n);
+        if (keyInfo.incremented){
+          this.synth.stop(keyInfo.lastN);
+          this.releaseKey(keyInfo.lastN);
+          keyInfo.incremented = false;
+        } else {
+          this.synth.stop(n);
+          this.releaseKey(n);
+        }
       }
 
     });
@@ -361,12 +375,13 @@ function makeBiquadFilter({context, cutoff}){
 
 "use strict";
 /* harmony export (immutable) */ __webpack_exports__["a"] = makeOscillator;
-function makeOscillator({context, frequency, type, oct}){
+function makeOscillator({context, n, frequency, type, oct}){
   var oscillator = context.createOscillator();
   let input = oscillator,
       output = oscillator;
   return {
     oct,
+    n,
     oscillator,
     frequency,
     type,
@@ -377,6 +392,9 @@ function makeOscillator({context, frequency, type, oct}){
     },
     changeType(newType){
       oscillator.type = newType;
+    },
+    changeFrequency(freq){
+      oscillator.frequency.value = freq;
     },
     changeOctave(octave){
       this.frequency = this.frequency * Math.pow(2, oct - 1);
@@ -443,11 +461,22 @@ function makeSynth(){
           res1 = this.osc1res, res2 = this.osc2res;
       this.activeVoices[n] =
         __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__voice_js__["a" /* makeVoice */])({
-          context, frequency, volume, type1, type2,
+          context, n, frequency, volume, type1, type2,
           vol1, vol2, oct1, oct2, cutoff1, cutoff2, res1, res2});
       this.activeVoices[n].connect();
       let envelope = this.envelope;
       this.activeVoices[n].start(envelope);
+    },
+
+    updateFrequencies(diff){
+      let voiceKeys = Object.keys(this.activeVoices);
+      for (let i = 0; i < voiceKeys.length; i++){
+        let n = this.activeVoices[voiceKeys[i]].n;
+        n += diff;
+        let freq = this.calculateFrequency(n);
+        this.activeVoices[voiceKeys[i]].changeFrequency(freq);
+      }
+
     },
 
     changeOscVolume(vol, osc){
@@ -581,13 +610,14 @@ document.addEventListener('DOMContentLoaded', function(){
 
 
 function makeVoice({
-  context, frequency, volume, type1, type2, vol1, vol2, oct1, oct2,
+  context, n, frequency, volume, type1, type2, vol1, vol2, oct1, oct2,
     cutoff1, cutoff2, res1, res2}){
   return {
     frequency,
     context,
-    oscillator1: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__oscillator_js__["a" /* default */])({context, frequency, oct: oct1, type: type1}),
-    oscillator2: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__oscillator_js__["a" /* default */])({context, frequency, oct: oct2, type: type2}),
+    n,
+    oscillator1: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__oscillator_js__["a" /* default */])({context, n, frequency, oct: oct1, type: type1}),
+    oscillator2: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__oscillator_js__["a" /* default */])({context, n, frequency, oct: oct2, type: type2}),
     amp1: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__amp_js__["a" /* default */])({context, vol: vol1}),
     amp2: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__amp_js__["a" /* default */])({context, vol: vol2}),
     envelope1: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__envelope_js__["a" /* default */])({context}),
@@ -606,9 +636,13 @@ function makeVoice({
 
       this.filter1.connect(volume);
       this.filter2.connect(volume);
-
-
     },
+
+    changeFrequency(freq){
+      this.oscillator1.changeFrequency(freq);
+      this.oscillator2.changeFrequency(freq);
+    },
+
     start(envelope){
       this.envelope1.envOn(envelope.attack, envelope.decay,
           envelope.sustain, this.amp1.amplitude.value);

@@ -37,11 +37,22 @@ export default function makeSynth(){
           res1 = this.osc1res, res2 = this.osc2res;
       this.activeVoices[n] =
         makeVoice({
-          context, frequency, volume, type1, type2,
+          context, n, frequency, volume, type1, type2,
           vol1, vol2, oct1, oct2, cutoff1, cutoff2, res1, res2});
       this.activeVoices[n].connect();
       let envelope = this.envelope;
       this.activeVoices[n].start(envelope);
+    },
+
+    updateFrequencies(diff){
+      let voiceKeys = Object.keys(this.activeVoices);
+      for (let i = 0; i < voiceKeys.length; i++){
+        let n = this.activeVoices[voiceKeys[i]].n;
+        n += diff;
+        let freq = this.calculateFrequency(n);
+        this.activeVoices[voiceKeys[i]].changeFrequency(freq);
+      }
+
     },
 
     changeOscVolume(vol, osc){

@@ -38,13 +38,20 @@ export const synthView = {
   },
   increment(val){
     let keys = Object.keys(this.keys);
-    let delta = val - this.inc;
+    let diff = Math.abs(this.inc - val);
+    if (this.inc > val) diff *= -1;
+
     for (let i = 0; i < keys.length; i++){
       let currKey = keys[i];
-      if (this.keys[currKey].n) this.keys[currKey].n += delta;
+      if (this.synth.activeVoices[this.keys[currKey].n]){
+        this.keys[currKey].incremented = true;
+      }
+      this.keys[currKey].lastN = this.keys[currKey].n;
+      let n = this.keys[currKey].n += diff;
+      if (n) this.keys[currKey].n = n;
     }
-    this.inc += delta;
-
+    this.synth.updateFrequencies(diff);
+    this.inc = val;
   },
   startSynth(n){
     this.synth.start(n);
@@ -148,9 +155,16 @@ export const synthView = {
         keyInfo.down = false;
         // If octave key, return before stopping synth
         if (keyInfo.type === 'octave' ) return;
+
         let n = keyInfo.n;
-        this.synth.stop(n);
-        this.releaseKey(n);
+        if (keyInfo.incremented){
+          this.synth.stop(keyInfo.lastN);
+          this.releaseKey(keyInfo.lastN);
+          keyInfo.incremented = false;
+        } else {
+          this.synth.stop(n);
+          this.releaseKey(n);
+        }
       }
 
     });

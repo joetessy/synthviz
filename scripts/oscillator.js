@@ -1,9 +1,10 @@
-export default function makeOscillator({context, frequency, type, oct}){
+export default function makeOscillator({context, n, frequency, type, oct}){
   var oscillator = context.createOscillator();
   let input = oscillator,
       output = oscillator;
   return {
     oct,
+    n,
     oscillator,
     frequency,
     type,
@@ -14,6 +15,9 @@ export default function makeOscillator({context, frequency, type, oct}){
     },
     changeType(newType){
       oscillator.type = newType;
+    },
+    changeFrequency(freq){
+      oscillator.frequency.value = freq;
     },
     changeOctave(octave){
       this.frequency = this.frequency * Math.pow(2, oct - 1);
