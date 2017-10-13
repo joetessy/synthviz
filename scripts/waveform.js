@@ -28,7 +28,7 @@ export default function makeWaveForm({context, frequency}){
     }
 
     analyser.getByteTimeDomainData(dataArray);
-    ctx.lineWidth = 1;
+    ctx.lineWidth = 2;
 
     ctx.strokeStyle = color;
     ctx.beginPath();
