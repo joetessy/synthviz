@@ -92,6 +92,11 @@ h4{
   margin-bottom: 10px;
 }
 
+.oscillator-controls {
+  display: flex;
+  justify-content: space-between;
+}
+
 .oscillators {
   display: flex;
 }
@@ -189,14 +194,23 @@ h4{
   user-select: none;
   box-sizing: border-box;
 }
-
-
-.off {
-  border: 5px solid white;
-  color: white;
+.vibrato-controls, .tremolo-controls{
+  display: flex;
+}
+.vibrato, .tremolo{
+  text-align: center;
 }
 
-.on {
-  border: 5px solid #ff00f7;
-  color: #ff00f7;
+.tremolo {
+  margin-left: 40px;
+}
+.vibrato-tremolo{
+  display: flex;
+  align-self: flex-end;
+  margin-bottom: 20px;
+  margin-right: 225px;
+}
+
+.vibrato-speed, .tremolo-speed{
+  margin-right: 20px;
 }

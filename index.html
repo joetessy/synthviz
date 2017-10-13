@@ -65,61 +65,166 @@
         </div>
       </div>
     </div>
-    <div class='oscillators'>
-      <div class='osc'>
-        <h3>OSC 1</h3>
-        <div class='settings'>
-          <div class='types'>
-            <h4>Type</h4>
-            <div data-type='sine' data-osc='1' class='osctype active'>
-              <img src='images/sin.png'/>
+    <div class='oscillator-controls'>
+      <div class='oscillators'>
+        <div class='osc'>
+          <h3>OSC 1</h3>
+          <div class='settings'>
+            <div class='types'>
+              <h4>Type</h4>
+              <div data-type='sine' data-osc='1' class='osctype active'>
+                <img src='images/sin.png'/>
+              </div>
+              <div data-type='square' data-osc='1' class='osctype'>
+                <img src='images/square.png'/>
+              </div>
+              <div data-type='sawtooth' data-osc='1' class='osctype'>
+                <img src='images/saw.png'/>
+              </div>
+              <div data-type='triangle' data-osc='1' class='osctype'>
+                <img src='images/triangle.png'/>
+              </div>
             </div>
-            <div data-type='square' data-osc='1' class='osctype'>
-              <img src='images/square.png'/>
-            </div>
-            <div data-type='sawtooth' data-osc='1' class='osctype'>
-              <img src='images/saw.png'/>
-            </div>
-            <div data-type='triangle' data-osc='1' class='osctype'>
-              <img src='images/triangle.png'/>
+            <div class='balance'>
+              <div class='control osccontrol'>
+                <h4>Volume</h4>
+                <input type="text" value="50" class="knob"
+                data-osc='1'
+                data-action='oscVolume'
+                data-width="50"
+                data-height='50'
+                data-fgColor="#ff00f7"
+                data-skin="tron"
+                data-thickness=".2"
+                data-angleOffset="180"/>
+              </div>
+              <div class='control osccontrol'>
+                <h4>Octave</h4>
+                <input type="text" value="1" class="knob"
+                data-osc='1'
+                data-action='octave'
+                data-height='50'
+                data-width="50"
+                data-min="1"
+                data-max="4"
+                data-fgColor="#ff00f7"
+                data-skin="tron"
+                data-thickness=".2"
+                data-angleOffset="180"/>
+              </div>
+              <div class='control osccontrol'>
+                <h4>Cutoff (kHz)</h4>
+                  <input type="text" value="22" class="knob"
+                  data-osc='1'
+                  data-action='cutoff'
+                  data-width="50"
+                  data-step=".01"
+                  data-min="0"
+                  data-max="22"
+                  data-height='50'
+                  data-fgColor="#ff00f7"
+                  data-skin="tron"
+                  data-thickness=".2"
+                  data-angleOffset="180"/>
+              </div>
             </div>
           </div>
-          <div class='balance'>
-            <div class='control osccontrol'>
-              <h4>Volume</h4>
-              <input type="text" value="50" class="knob"
-              data-osc='1'
-              data-action='oscVolume'
-              data-width="50"
-              data-height='50'
-              data-fgColor="#ff00f7"
-              data-skin="tron"
-              data-thickness=".2"
-              data-angleOffset="180"/>
+        </div>
+        <div class='osc'>
+          <h3>OSC 2</h3>
+          <div class='settings'>
+            <div class='types'>
+              <h4>Type</h4>
+              <div data-type='sine' data-osc='2' class='osctype active'>
+                <img src='images/sin.png'/>
+              </div>
+              <div data-type='square' data-osc='2' class='osctype'>
+                <img src='images/square.png'/>
+              </div>
+              <div data-type='sawtooth' data-osc='2' class='osctype'>
+                <img src='images/saw.png'/>
+              </div>
+              <div data-type='triangle' data-osc='2' class='osctype'>
+                <img src='images/triangle.png'/>
+              </div>
             </div>
-            <div class='control osccontrol'>
-              <h4>Octave</h4>
-              <input type="text" value="1" class="knob"
-              data-osc='1'
-              data-action='octave'
-              data-height='50'
-              data-width="50"
-              data-min="1"
-              data-max="4"
-              data-fgColor="#ff00f7"
-              data-skin="tron"
-              data-thickness=".2"
-              data-angleOffset="180"/>
-            </div>
-            <div class='control osccontrol'>
-              <h4>Cutoff (kHz)</h4>
-                <input type="text" value="22" class="knob"
-                data-osc='1'
-                data-action='cutoff'
+            <div class='balance'>
+              <div class='control osccontrol'>
+                <h4>Volume</h4>
+                <input type="text" value="25" class="knob"
+                data-osc='2'
+                data-action='oscVolume'
                 data-width="50"
-                data-step=".01"
+                data-height='50'
+                data-fgColor="#ff00f7"
+                data-skin="tron"
+                data-thickness=".2"
+                data-angleOffset="180"/>
+              </div>
+              <div class='control osccontrol'>
+              <h4>Octave</h4>
+                <input type="text" value="2" class="knob"
+                data-osc='2'
+                data-action='octave'
+                data-width="50"
+                data-min="1"
+                data-max="4"
+                data-height='50'
+                data-fgColor="#ff00f7"
+                data-skin="tron"
+                data-thickness=".2"
+                data-angleOffset="180"/>
+              </div>
+              <div class='control osccontrol'>
+                <h4>Cutoff (kHz)</h4>
+                  <input
+                  type="text" value="22" class="knob"
+                  data-osc='2'
+                  data-action='cutoff'
+                  data-width="50"
+                  data-step='.01'
+                  data-min="0"
+                  data-max="22"
+                  data-height='50'
+                  data-fgColor="#ff00f7"
+                  data-skin="tron"
+                  data-thickness=".2"
+                  data-angleOffset="180"/>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class='vibrato-tremolo'>
+        <div class='vibrato'>
+          <h3>LFO Vibrato</h3>
+          <div class='vibrato-controls'>
+            <div class='vibrato-speed'>
+              <h4>Speed</h4>
+                <input
+                type="text" value="0" class="knob"
+                data-osc='2'
+                data-action='vibrato-speed'
+                data-width="50"
+                data-step='.5'
                 data-min="0"
-                data-max="22"
+                data-max="10"
+                data-height='50'
+                data-fgColor="#ff00f7"
+                data-skin="tron"
+                data-thickness=".2"
+                data-angleOffset="180"/>
+            </div>
+            <div class='vibrato-depth'>
+              <h4>Depth</h4>
+                <input
+                type="text" value="0" class="knob"
+                data-osc='2'
+                data-action='vibrato-depth'
+                data-width="50"
+                data-step='1'
+                data-min="0"
+                data-max="50"
                 data-height='50'
                 data-fgColor="#ff00f7"
                 data-skin="tron"
@@ -128,62 +233,35 @@
             </div>
           </div>
         </div>
-      </div>
-      <div class='osc'>
-        <h3>OSC 2</h3>
-        <div class='settings'>
-          <div class='types'>
-            <h4>Type</h4>
-            <div data-type='sine' data-osc='2' class='osctype active'>
-              <img src='images/sin.png'/>
-            </div>
-            <div data-type='square' data-osc='2' class='osctype'>
-              <img src='images/square.png'/>
-            </div>
-            <div data-type='sawtooth' data-osc='2' class='osctype'>
-              <img src='images/saw.png'/>
-            </div>
-            <div data-type='triangle' data-osc='2' class='osctype'>
-              <img src='images/triangle.png'/>
-            </div>
-          </div>
-          <div class='balance'>
-            <div class='control osccontrol'>
-              <h4>Volume</h4>
-              <input type="text" value="25" class="knob"
-              data-osc='2'
-              data-action='oscVolume'
-              data-width="50"
-              data-height='50'
-              data-fgColor="#ff00f7"
-              data-skin="tron"
-              data-thickness=".2"
-              data-angleOffset="180"/>
-            </div>
-            <div class='control osccontrol'>
-            <h4>Octave</h4>
-              <input type="text" value="2" class="knob"
-              data-osc='2'
-              data-action='octave'
-              data-width="50"
-              data-min="1"
-              data-max="4"
-              data-height='50'
-              data-fgColor="#ff00f7"
-              data-skin="tron"
-              data-thickness=".2"
-              data-angleOffset="180"/>
-            </div>
-            <div class='control osccontrol'>
-              <h4>Cutoff (kHz)</h4>
+        <div class='tremolo'>
+          <h3>LFO Tremolo</h3>
+          <div class='tremolo-controls'>
+            <div class='tremolo-speed'>
+              <h4>Speed</h4>
                 <input
-                type="text" value="22" class="knob"
+                type="text" value="0" class="knob"
                 data-osc='2'
-                data-action='cutoff'
+                data-action='tremolo-speed'
                 data-width="50"
-                data-step='.01'
+                data-step='.5'
                 data-min="0"
-                data-max="22"
+                data-max="10"
+                data-height='50'
+                data-fgColor="#ff00f7"
+                data-skin="tron"
+                data-thickness=".2"
+                data-angleOffset="180"/>
+            </div>
+            <div class='tremolo-depth'>
+              <h4>Depth</h4>
+                <input
+                type="text" value="0" class="knob"
+                data-osc='2'
+                data-action='tremolo-depth'
+                data-width="50"
+                data-step='1'
+                data-min="0"
+                data-max="100"
                 data-height='50'
                 data-fgColor="#ff00f7"
                 data-skin="tron"
@@ -195,14 +273,6 @@
       </div>
     </div>
     <div class='right-controls'>
-        <div class='lfo'>
-          <h3>LFO</h3>
-          <div class='lfo-controls'>
-            <div class='lfo-on-off off'>
-              OFF
-            </div>
-          </div>
-        </div>
         <div class='tuner'>
         <h3>Tune</h3>
         <input

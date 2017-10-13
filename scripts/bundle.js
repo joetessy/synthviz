@@ -241,25 +241,23 @@ const synthView = {
     }
   },
 
-  setUpLFO(){
-    document.querySelector('.lfo-on-off').addEventListener('click', function(e){
-      if (Array.from(e.currentTarget.classList).includes('off')){
-        e.currentTarget.classList.remove('off');
-        e.currentTarget.classList.add('on');
-        e.currentTarget.innerHTML = 'ON';
-      } else {
-        e.currentTarget.classList.add('off');
-        e.currentTarget.classList.remove('on');
-        e.currentTarget.innerHTML = 'OFF';
-      }
-    });
-  },
-
   setUpKnobs(){
     let that = this;
     $(".knob").knob({
         'release': function(v){
           switch(this.$[0].dataset.action){
+            case 'tremolo-speed':
+              that.synth.changeLFO(v, 'speed', 'tremolo');
+              break;
+            case 'tremolo-depth':
+              that.synth.changeLFO(v, 'depth', 'tremolo');
+              break;
+            case 'vibrato-speed':
+              that.synth.changeLFO(v, 'speed', 'vibrato');
+              break;
+            case 'vibrato-depth':
+              that.synth.changeLFO(v, 'dpeth', 'vibrato');
+              break;
             case 'tune':
               that.increment(v);
               break;
@@ -319,7 +317,6 @@ const synthView = {
   start(){
     let keys = this.keys;
     this.setUpKnobs();
-    this.setUpLFO();
     this.setUpOscillatorTypes();
     document.addEventListener('keydown', e => {
       let keyInfo = keys[e.keyCode];
@@ -368,8 +365,12 @@ const synthView = {
     }.bind(this));
 
 
+    this.synth.tremoloLfo.connect(this.synth.tremoloAmp);
+    this.synth.tremoloAmp.connect(this.synth.volume.gain.gain);
+
     this.synth.volume.connect(this.synth.compressor);
     this.synth.compressor.connect(this.synth.context.destination);
+    this.synth.tremoloLfo.start();
 
   },
 };
@@ -418,23 +419,30 @@ function makeBiquadFilter({context, cutoff}){
 
 "use strict";
 /* harmony export (immutable) */ __webpack_exports__["a"] = makeLFO;
-function makeLFO({context, frequency, gain}){
+function makeLFO({context, frequency}){
   let lfo = context.createOscillator(),
       input = lfo,
-      output = lfo,
-      lfoFrequency = lfo.frequency;
-      lfoFrequency.value = frequency;
+      output = lfo;
+      let lfoFrequency = lfo.frequency;
+      lfo.frequency.value = frequency;
+
   return {
     lfo,
     lfoFrequency,
     input,
     output,
+    changeFrequency(newFrequency){
+      this.lfoFrequency.value = newFrequency;      
+    },
     connect(node){
       if (node.hasOwnProperty('input')) {
         output.connect(node.input);
       } else {
         output.connect(node);
       }
+    },
+    start(){
+      lfo.start();
     }
   };
 }
@@ -493,6 +501,8 @@ function makeOscillator({context, n, frequency, type, oct}){
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__voice_js__ = __webpack_require__(8);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__envelope_js__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__amp_js__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__lfo_js__ = __webpack_require__(4);
+
 
 
 
@@ -513,6 +523,12 @@ function makeSynth(){
     destination: context.destination,
     volume,
     compressor,
+    tremoloAmp: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__amp_js__["a" /* default */])({context, vol: 0}),
+    tremoloLfo: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__lfo_js__["a" /* default */])({context, frequency: 0}),
+    vibratoSpeed: 0,
+    vibratoDepth: 0,
+    tremoloSpeed: 0,
+    tremoloDepth: 0,
     osc1type: 'sine',
     osc2type: 'sine',
     osc1cutoff: 22,
@@ -529,11 +545,14 @@ function makeSynth(){
           vol1 = this.osc1vol, vol2 = this.osc2vol,
           oct1 = this.osc1oct, oct2 = this.osc2oct,
           cutoff1 = this.osc1cutoff, cutoff2 = this.osc2cutoff,
-          res1 = this.osc1res, res2 = this.osc2res;
+          res1 = this.osc1res, res2 = this.osc2res,
+          vibratoSpeed = this.vibratoSpeed, vibratoDepth = this.vibratoDepth,
+          tremoloSpeed = this.tremoloSpeed, tremoloDepth = this.tremoloDepth;
       this.activeVoices[n] =
         __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__voice_js__["a" /* makeVoice */])({
           context, n, frequency, volume, type1, type2,
-          vol1, vol2, oct1, oct2, cutoff1, cutoff2, res1, res2});
+          vol1, vol2, oct1, oct2, cutoff1, cutoff2, res1, res2,
+          vibratoSpeed, vibratoDepth, tremoloSpeed, tremoloDepth});
       this.activeVoices[n].connect();
       let envelope = this.envelope;
       this.activeVoices[n].start(envelope);
@@ -548,6 +567,37 @@ function makeSynth(){
         this.activeVoices[voiceKeys[i]].changeFrequency(freq);
       }
 
+    },
+
+    changeLFO(value, control, type){
+      if (type === 'vibrato'){
+        if ( control === 'speed') {
+          this.vibratoSpeed = value;
+        } else {
+          this.vibratoDepth = value;
+        }
+      } else {
+        if (type === 'tremolo') {
+          if (control === 'speed'){
+            this.tremoloSpeed = value;
+            this.tremoloLfo.lfoFrequency.value = value;
+          } else {
+            value /= 20000;
+            this.tremoloDepth = value;
+            this.tremoloAmp.gain.gain.value = value;
+          }
+        }
+      }
+      let voiceKeys = Object.keys(this.activeVoices);
+      for (let i = 0; i < voiceKeys.length; i++){
+        if (type === 'vibrato'){
+          if (control === 'speed'){
+            this.activeVoices[voiceKeys[i]].lfoVibrato.changeFrequency(this.vibratoSpeed);
+          } else {
+            this.activeVoices[voiceKeys[i]].lfoVibratoAmp.changeAmplitude(this.vibratoDepth);
+          }
+        }
+      }
     },
 
     changeOscVolume(vol, osc){
@@ -684,12 +734,13 @@ document.addEventListener('DOMContentLoaded', function(){
 
 function makeVoice({
   context, n, frequency, volume, type1, type2, vol1, vol2, oct1, oct2,
-    cutoff1, cutoff2, res1, res2}){
+    cutoff1, cutoff2, res1, res2, vibratoSpeed, vibratoDepth}){
   return {
     frequency,
     context,
-    lfo: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4__lfo_js__["a" /* default */])({context, frequency: 20}),
-    lfoGain: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__amp_js__["a" /* default */])({context, vol: 20}),
+    n,
+    lfoVibrato: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4__lfo_js__["a" /* default */])({context, frequency: vibratoSpeed}),
+    lfoVibratoAmp: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__amp_js__["a" /* default */])({context, vol: vibratoDepth}),
     oscillator1: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__oscillator_js__["a" /* default */])({context, n, frequency, oct: oct1, type: type1}),
     oscillator2: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__oscillator_js__["a" /* default */])({context, n, frequency, oct: oct2, type: type2}),
     amp1: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__amp_js__["a" /* default */])({context, vol: vol1}),
@@ -699,9 +750,10 @@ function makeVoice({
     filter1: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__biquadfilter_js__["a" /* default */])({context, cutoff: cutoff1, res: res1}),
     filter2: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__biquadfilter_js__["a" /* default */])({context, cutoff: cutoff2, res: res2}),
     connect(){
-      this.lfo.connect(this.lfoGain);
-      this.lfoGain.connect(this.oscillator1.oscillator.frequency);
-      this.lfoGain.connect(this.oscillator2.oscillator.frequency);
+      this.lfoVibrato.connect(this.lfoVibratoAmp);
+
+      this.lfoVibratoAmp.connect(this.oscillator1.oscillator.frequency);
+      this.lfoVibratoAmp.connect(this.oscillator2.oscillator.frequency);
 
       this.envelope1.connect(this.amp1.amplitude);
       this.envelope2.connect(this.amp2.amplitude);
@@ -714,7 +766,6 @@ function makeVoice({
 
       this.filter1.connect(volume);
       this.filter2.connect(volume);
-
     },
 
     changeFrequency(freq){
@@ -728,15 +779,20 @@ function makeVoice({
       this.envelope2.envOn(envelope.attack, envelope.decay,
           envelope.sustain, this.amp2.amplitude.value);
 
-      this.lfo.lfo.start();
       this.oscillator1.start();
       this.oscillator2.start();
+      this.lfoVibrato.start();
 
     },
     stop(releaseTime){
       this.envelope1.envOff(releaseTime);
       this.envelope2.envOff(releaseTime);
       setTimeout(() => {
+        this.lfoVibrato.lfo.disconnect(this.lfoVibratoAmp.gain);
+
+        this.lfoVibratoAmp.gain.disconnect(this.oscillator1.oscillator.frequency);
+        this.lfoVibratoAmp.gain.disconnect(this.oscillator2.oscillator.frequency);
+
         this.oscillator1.oscillator.disconnect(this.amp1.gain);
         this.oscillator2.oscillator.disconnect(this.amp2.gain);
 
@@ -745,6 +801,7 @@ function makeVoice({
 
         this.filter1.filter.disconnect(volume.gain);
         this.filter2.filter.disconnect(volume.gain);
+
       }, releaseTime * 1000);
     }
   };

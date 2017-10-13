@@ -1,6 +1,7 @@
 import { makeVoice } from './voice.js';
 import makeEnvelope from './envelope.js';
 import amp from './amp.js';
+import lfo from './lfo.js';
 
 export default function makeSynth(){
   var context = new AudioContext();
@@ -18,6 +19,12 @@ export default function makeSynth(){
     destination: context.destination,
     volume,
     compressor,
+    tremoloAmp: amp({context, vol: 0}),
+    tremoloLfo: lfo({context, frequency: 0}),
+    vibratoSpeed: 0,
+    vibratoDepth: 0,
+    tremoloSpeed: 0,
+    tremoloDepth: 0,
     osc1type: 'sine',
     osc2type: 'sine',
     osc1cutoff: 22,
@@ -34,11 +41,14 @@ export default function makeSynth(){
           vol1 = this.osc1vol, vol2 = this.osc2vol,
           oct1 = this.osc1oct, oct2 = this.osc2oct,
           cutoff1 = this.osc1cutoff, cutoff2 = this.osc2cutoff,
-          res1 = this.osc1res, res2 = this.osc2res;
+          res1 = this.osc1res, res2 = this.osc2res,
+          vibratoSpeed = this.vibratoSpeed, vibratoDepth = this.vibratoDepth,
+          tremoloSpeed = this.tremoloSpeed, tremoloDepth = this.tremoloDepth;
       this.activeVoices[n] =
         makeVoice({
           context, n, frequency, volume, type1, type2,
-          vol1, vol2, oct1, oct2, cutoff1, cutoff2, res1, res2});
+          vol1, vol2, oct1, oct2, cutoff1, cutoff2, res1, res2,
+          vibratoSpeed, vibratoDepth, tremoloSpeed, tremoloDepth});
       this.activeVoices[n].connect();
       let envelope = this.envelope;
       this.activeVoices[n].start(envelope);
@@ -53,6 +63,37 @@ export default function makeSynth(){
         this.activeVoices[voiceKeys[i]].changeFrequency(freq);
       }
 
+    },
+
+    changeLFO(value, control, type){
+      if (type === 'vibrato'){
+        if ( control === 'speed') {
+          this.vibratoSpeed = value;
+        } else {
+          this.vibratoDepth = value;
+        }
+      } else {
+        if (type === 'tremolo') {
+          if (control === 'speed'){
+            this.tremoloSpeed = value;
+            this.tremoloLfo.lfoFrequency.value = value;
+          } else {
+            value /= 20000;
+            this.tremoloDepth = value;
+            this.tremoloAmp.gain.gain.value = value;
+          }
+        }
+      }
+      let voiceKeys = Object.keys(this.activeVoices);
+      for (let i = 0; i < voiceKeys.length; i++){
+        if (type === 'vibrato'){
+          if (control === 'speed'){
+            this.activeVoices[voiceKeys[i]].lfoVibrato.changeFrequency(this.vibratoSpeed);
+          } else {
+            this.activeVoices[voiceKeys[i]].lfoVibratoAmp.changeAmplitude(this.vibratoDepth);
+          }
+        }
+      }
     },
 
     changeOscVolume(vol, osc){

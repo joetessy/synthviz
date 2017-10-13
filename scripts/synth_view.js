@@ -102,25 +102,23 @@ export const synthView = {
     }
   },
 
-  setUpLFO(){
-    document.querySelector('.lfo-on-off').addEventListener('click', function(e){
-      if (Array.from(e.currentTarget.classList).includes('off')){
-        e.currentTarget.classList.remove('off');
-        e.currentTarget.classList.add('on');
-        e.currentTarget.innerHTML = 'ON';
-      } else {
-        e.currentTarget.classList.add('off');
-        e.currentTarget.classList.remove('on');
-        e.currentTarget.innerHTML = 'OFF';
-      }
-    });
-  },
-
   setUpKnobs(){
     let that = this;
     $(".knob").knob({
         'release': function(v){
           switch(this.$[0].dataset.action){
+            case 'tremolo-speed':
+              that.synth.changeLFO(v, 'speed', 'tremolo');
+              break;
+            case 'tremolo-depth':
+              that.synth.changeLFO(v, 'depth', 'tremolo');
+              break;
+            case 'vibrato-speed':
+              that.synth.changeLFO(v, 'speed', 'vibrato');
+              break;
+            case 'vibrato-depth':
+              that.synth.changeLFO(v, 'dpeth', 'vibrato');
+              break;
             case 'tune':
               that.increment(v);
               break;
@@ -180,7 +178,6 @@ export const synthView = {
   start(){
     let keys = this.keys;
     this.setUpKnobs();
-    this.setUpLFO();
     this.setUpOscillatorTypes();
     document.addEventListener('keydown', e => {
       let keyInfo = keys[e.keyCode];
@@ -229,8 +226,12 @@ export const synthView = {
     }.bind(this));
 
 
+    this.synth.tremoloLfo.connect(this.synth.tremoloAmp);
+    this.synth.tremoloAmp.connect(this.synth.volume.gain.gain);
+
     this.synth.volume.connect(this.synth.compressor);
     this.synth.compressor.connect(this.synth.context.destination);
+    this.synth.tremoloLfo.start();
 
   },
 };

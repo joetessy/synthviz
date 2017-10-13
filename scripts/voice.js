@@ -8,12 +8,13 @@ import lfo from './lfo.js';
 
 export function makeVoice({
   context, n, frequency, volume, type1, type2, vol1, vol2, oct1, oct2,
-    cutoff1, cutoff2, res1, res2}){
+    cutoff1, cutoff2, res1, res2, vibratoSpeed, vibratoDepth}){
   return {
     frequency,
     context,
-    lfo: lfo({context, frequency: 20}),
-    lfoGain: amp({context, vol: 20}),
+    n,
+    lfoVibrato: lfo({context, frequency: vibratoSpeed}),
+    lfoVibratoAmp: amp({context, vol: vibratoDepth}),
     oscillator1: oscillator({context, n, frequency, oct: oct1, type: type1}),
     oscillator2: oscillator({context, n, frequency, oct: oct2, type: type2}),
     amp1: amp({context, vol: vol1}),
@@ -23,9 +24,10 @@ export function makeVoice({
     filter1: makeBiquadFilter({context, cutoff: cutoff1, res: res1}),
     filter2: makeBiquadFilter({context, cutoff: cutoff2, res: res2}),
     connect(){
-      this.lfo.connect(this.lfoGain);
-      this.lfoGain.connect(this.oscillator1.oscillator.frequency);
-      this.lfoGain.connect(this.oscillator2.oscillator.frequency);
+      this.lfoVibrato.connect(this.lfoVibratoAmp);
+
+      this.lfoVibratoAmp.connect(this.oscillator1.oscillator.frequency);
+      this.lfoVibratoAmp.connect(this.oscillator2.oscillator.frequency);
 
       this.envelope1.connect(this.amp1.amplitude);
       this.envelope2.connect(this.amp2.amplitude);
@@ -38,7 +40,6 @@ export function makeVoice({
 
       this.filter1.connect(volume);
       this.filter2.connect(volume);
-
     },
 
     changeFrequency(freq){
@@ -52,15 +53,20 @@ export function makeVoice({
       this.envelope2.envOn(envelope.attack, envelope.decay,
           envelope.sustain, this.amp2.amplitude.value);
 
-      this.lfo.lfo.start();
       this.oscillator1.start();
       this.oscillator2.start();
+      this.lfoVibrato.start();
 
     },
     stop(releaseTime){
       this.envelope1.envOff(releaseTime);
       this.envelope2.envOff(releaseTime);
       setTimeout(() => {
+        this.lfoVibrato.lfo.disconnect(this.lfoVibratoAmp.gain);
+
+        this.lfoVibratoAmp.gain.disconnect(this.oscillator1.oscillator.frequency);
+        this.lfoVibratoAmp.gain.disconnect(this.oscillator2.oscillator.frequency);
+
         this.oscillator1.oscillator.disconnect(this.amp1.gain);
         this.oscillator2.oscillator.disconnect(this.amp2.gain);
 
@@ -69,6 +75,7 @@ export function makeVoice({
 
         this.filter1.filter.disconnect(volume.gain);
         this.filter2.filter.disconnect(volume.gain);
+
       }, releaseTime * 1000);
     }
   };
