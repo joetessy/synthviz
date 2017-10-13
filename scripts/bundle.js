@@ -109,6 +109,8 @@ function makeEnvelope({context}){
   let envelope = {
 
     envOn(attackTime, decayTime, sustainVal, amplitude){
+      console.log(amplitude);
+
       let now = context.currentTime;
       this.param.cancelScheduledValues(now);
       this.param.setValueAtTime(0, now);
@@ -469,7 +471,7 @@ const synthView = {
     this.synth.tremoloAmp.connect(this.synth.volume.gain.gain);
 
     this.synth.volume.connect(this.synth.compressor);
-    this.synth.volume.connect(this.synth.context.destination);
+    this.synth.compressor.connect(this.synth.context.destination);
     this.synth.tremoloLfo.start();
 
   },
@@ -853,7 +855,8 @@ function makeVoice({
     },
 
     start(envelope){
-      console.log(this.frequency);
+      console.log(this.amp1.amplitude.value);
+      console.log(this.amp2.amplitude.value);
       this.envelope1.envOn(envelope.attack, envelope.decay,
           envelope.sustain, this.amp1.amplitude.value);
       this.envelope2.envOn(envelope.attack, envelope.decay,

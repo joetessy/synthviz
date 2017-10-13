@@ -295,7 +295,7 @@ export const synthView = {
     this.synth.tremoloAmp.connect(this.synth.volume.gain.gain);
 
     this.synth.volume.connect(this.synth.compressor);
-    this.synth.volume.connect(this.synth.context.destination);
+    this.synth.compressor.connect(this.synth.context.destination);
     this.synth.tremoloLfo.start();
 
   },
