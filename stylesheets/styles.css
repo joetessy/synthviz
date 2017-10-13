@@ -7,6 +7,7 @@
  }
 
 body {
+  margin: 0;
   background-color: black;
   color: #ff00f7;
   font-family: sans-serif
@@ -108,7 +109,8 @@ h4{
 #canvas{
   z-index: -1;
   position: absolute;
-  height: 100vh;
+  height: 100%;
+  top: 0;
   width: 100vw;
 }
 

@@ -117,7 +117,7 @@ export const synthView = {
               that.synth.changeLFO(v, 'speed', 'vibrato');
               break;
             case 'vibrato-depth':
-              that.synth.changeLFO(v, 'dpeth', 'vibrato');
+              that.synth.changeLFO(v, 'depth', 'vibrato');
               break;
             case 'tune':
               that.increment(v);
@@ -136,9 +136,9 @@ export const synthView = {
               break;
             case 'oscVolume':
               if (this.$[0].dataset.osc === '1'){
-                that.synth.changeOscVolume(v/200, 1);
+                that.synth.changeOscVolume(v/1000, 1);
               } else {
-                that.synth.changeOscVolume(v/200, 2);
+                that.synth.changeOscVolume(v/1000, 2);
               }
               break;
             case 'octave':
@@ -229,26 +229,6 @@ export const synthView = {
        $('.knob[data-action="vibrato-depth"]').val(vibratoDepth).trigger('change');
        document.querySelector(`.osctype[data-type=${osc1type}].osctype[data-osc="1"]`).click();
        document.querySelector(`.osctype[data-type=${osc2type}].osctype[data-osc="2"]`).click();
-
-
-
-
-      // this.synth.envelope.attack = attack * 2 / 100;
-      // this.synth.envelope.decay = decay * 3 / 100;
-      // this.synth.envelope.sustain = sustain / 100;
-      // this.synth.envelope.relase = release * 2 / 100;
-      // this.synth.osc1vol = osc1vol / 200;
-      // this.synth.osc2vol = osc2vol / 200;
-      // this.synth.osc1oct = osc1oct;
-      // this.synth.osc2oct = osc2oct;
-      // this.synth.osc1cutoff = osc1cutoff;
-      // this.synth.osc2cutoff = osc1cutoff;
-      // this.synth.tremoloDepth = tremoloDepth;
-      // this.synth.tremoloSpeed = tremoloSpeed;
-      // this.synth.vibratoDepth = vibratoDepth;
-      // this.synth.vibratoSpeed = vibratoSpeed;
-      // this.synth.osc1type = osc1type;
-      // this.synth.osc2type = osc2type;
   },
   start(){
     let keys = this.keys;
@@ -306,7 +286,7 @@ export const synthView = {
     this.synth.tremoloAmp.connect(this.synth.volume.gain.gain);
 
     this.synth.volume.connect(this.synth.compressor);
-    this.synth.compressor.connect(this.synth.context.destination);
+    this.synth.volume.connect(this.synth.context.destination);
     this.synth.tremoloLfo.start();
 
   },

@@ -74,7 +74,7 @@
 /* harmony export (immutable) */ __webpack_exports__["a"] = makeAmp;
 function makeAmp({context, vol}){
   let gain = context.createGain();
-  if (vol === undefined) vol = .01;
+  if (vol === undefined) vol = .1;
   let input = gain,
       output = gain,
       amplitude = gain.gain;
@@ -256,7 +256,7 @@ const synthView = {
               that.synth.changeLFO(v, 'speed', 'vibrato');
               break;
             case 'vibrato-depth':
-              that.synth.changeLFO(v, 'dpeth', 'vibrato');
+              that.synth.changeLFO(v, 'depth', 'vibrato');
               break;
             case 'tune':
               that.increment(v);
@@ -275,9 +275,9 @@ const synthView = {
               break;
             case 'oscVolume':
               if (this.$[0].dataset.osc === '1'){
-                that.synth.changeOscVolume(v/200, 1);
+                that.synth.changeOscVolume(v/1000, 1);
               } else {
-                that.synth.changeOscVolume(v/200, 2);
+                that.synth.changeOscVolume(v/1000, 2);
               }
               break;
             case 'octave':
@@ -368,26 +368,6 @@ const synthView = {
        $('.knob[data-action="vibrato-depth"]').val(vibratoDepth).trigger('change');
        document.querySelector(`.osctype[data-type=${osc1type}].osctype[data-osc="1"]`).click();
        document.querySelector(`.osctype[data-type=${osc2type}].osctype[data-osc="2"]`).click();
-
-
-
-
-      // this.synth.envelope.attack = attack * 2 / 100;
-      // this.synth.envelope.decay = decay * 3 / 100;
-      // this.synth.envelope.sustain = sustain / 100;
-      // this.synth.envelope.relase = release * 2 / 100;
-      // this.synth.osc1vol = osc1vol / 200;
-      // this.synth.osc2vol = osc2vol / 200;
-      // this.synth.osc1oct = osc1oct;
-      // this.synth.osc2oct = osc2oct;
-      // this.synth.osc1cutoff = osc1cutoff;
-      // this.synth.osc2cutoff = osc1cutoff;
-      // this.synth.tremoloDepth = tremoloDepth;
-      // this.synth.tremoloSpeed = tremoloSpeed;
-      // this.synth.vibratoDepth = vibratoDepth;
-      // this.synth.vibratoSpeed = vibratoSpeed;
-      // this.synth.osc1type = osc1type;
-      // this.synth.osc2type = osc2type;
   },
   start(){
     let keys = this.keys;
@@ -445,7 +425,7 @@ const synthView = {
     this.synth.tremoloAmp.connect(this.synth.volume.gain.gain);
 
     this.synth.volume.connect(this.synth.compressor);
-    this.synth.compressor.connect(this.synth.context.destination);
+    this.synth.volume.connect(this.synth.context.destination);
     this.synth.tremoloLfo.start();
 
   },
@@ -609,8 +589,8 @@ function makeSynth(){
     osc2type: 'sine',
     osc1cutoff: 22,
     osc2cutoff: 22,
-    osc1vol: 0.5,
-    osc2vol: 0.25,
+    osc1vol: 0.1,
+    osc2vol: 0.05,
     osc1oct: 1,
     osc2oct: 2,
     envelope: {attack: 0, decay: 0, sustain: .5, release: .5},
@@ -639,10 +619,10 @@ function makeSynth(){
       for (let i = 0; i < voiceKeys.length; i++){
         let n = this.activeVoices[voiceKeys[i]].n;
         n += diff;
+        this.activeVoices[voiceKeys[i]].n = n;
         let freq = this.calculateFrequency(n);
         this.activeVoices[voiceKeys[i]].changeFrequency(freq);
       }
-
     },
 
     changeLFO(value, control, type){
@@ -658,7 +638,7 @@ function makeSynth(){
             this.tremoloSpeed = value;
             this.tremoloLfo.lfoFrequency.value = value;
           } else {
-            value /= 20000;
+            value /= 1000;
             this.tremoloDepth = value;
             this.tremoloAmp.gain.gain.value = value;
           }
@@ -800,6 +780,7 @@ document.addEventListener('DOMContentLoaded', function(){
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__envelope_js__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__biquadfilter_js__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__lfo_js__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__waveform_js__ = __webpack_require__(9);
 
 
 
@@ -816,6 +797,7 @@ function makeVoice({
     context,
     n,
     lfoVibrato: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4__lfo_js__["a" /* default */])({context, frequency: vibratoSpeed}),
+    analyser: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_5__waveform_js__["a" /* default */])({context, frequency}),
     lfoVibratoAmp: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__amp_js__["a" /* default */])({context, vol: vibratoDepth}),
     oscillator1: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__oscillator_js__["a" /* default */])({context, n, frequency, oct: oct1, type: type1}),
     oscillator2: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__oscillator_js__["a" /* default */])({context, n, frequency, oct: oct2, type: type2}),
@@ -840,8 +822,10 @@ function makeVoice({
       this.amp1.connect(this.filter1);
       this.amp2.connect(this.filter2);
 
-      this.filter1.connect(volume);
-      this.filter2.connect(volume);
+      this.filter1.connect(this.analyser);
+      this.filter2.connect(this.analyser);
+      this.analyser.connect(volume);
+      this.analyser.connect(volume);
     },
 
     changeFrequency(freq){
@@ -858,7 +842,8 @@ function makeVoice({
       this.oscillator1.start();
       this.oscillator2.start();
       this.lfoVibrato.start();
-
+      this.analyser.canvasContext.clearRect(0, 0, this.analyser.canvas.width, this.analyser.canvas.height);
+      this.analyser.draw(this.frequency);
     },
     stop(releaseTime){
       this.envelope1.envOff(releaseTime);
@@ -875,10 +860,80 @@ function makeVoice({
         this.amp1.gain.disconnect(this.filter1.filter);
         this.amp2.gain.disconnect(this.filter2.filter);
 
-        this.filter1.filter.disconnect(volume.gain);
-        this.filter2.filter.disconnect(volume.gain);
+        this.filter1.filter.disconnect(this.analyser.analyser);
+        this.filter2.filter.disconnect(this.analyser.analyser);
+
+        this.analyser.analyser.disconnect(volume);
+        this.analyser.analyser.disconnect(volume);
 
       }, releaseTime * 1000);
+    }
+  };
+}
+
+
+/***/ }),
+/* 9 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (immutable) */ __webpack_exports__["a"] = makeWaveForm;
+function makeWaveForm({context, frequency}){
+  let drawVisual;
+  let canvas = document.querySelector('#canvas');
+  let canvasContext = canvas.getContext('2d');
+  let analyser = context.createAnalyser();
+    analyser.fftSize = 2048;
+  var bufferLength = analyser.frequencyBinCount;
+  var dataArray = new Uint8Array(bufferLength);
+  let WIDTH = canvas.width;
+  let HEIGHT = canvas.height;
+
+  let input = analyser,
+      output = analyser;
+
+  function draw(freq){
+
+    canvasContext.clearRect(0, 0, WIDTH, HEIGHT);
+    drawVisual = requestAnimationFrame(draw);
+    analyser.getByteTimeDomainData(dataArray);
+    canvasContext.lineWidth = 2;
+
+    canvasContext.strokeStyle = `rgb(0, 255, 237)`;
+    // canvasContext.strokeStyle = `rgb(${a}, ${b}, ${c})`;
+    canvasContext.beginPath();
+    var sliceWidth = WIDTH * 1.0 / bufferLength;
+    var x = 0;
+    for(var i = 0; i < bufferLength; i++) {
+      var v = dataArray[i] / 128.0;
+      var y = v * HEIGHT / 2;
+      if(i === 0) {
+        canvasContext.moveTo(x, y);
+      } else {
+        canvasContext.lineTo(x, y);
+      }
+      x += sliceWidth;
+    }
+    canvasContext.lineTo(canvas.width, canvas.height/2);
+    canvasContext.stroke();
+  }
+
+  return {
+    analyser,
+    canvas,
+    canvasContext,
+    input,
+    output,
+    draw,
+    calculateColor(frequency){
+
+    },
+    connect(node){
+      if (node.hasOwnProperty('input')) {
+        this.output.connect(node.input);
+      } else {
+        this.output.connect(node);
+      }
     }
   };
 }

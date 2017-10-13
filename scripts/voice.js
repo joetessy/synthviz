@@ -3,7 +3,7 @@ import amp from './amp.js';
 import makeEnvelope from './envelope.js';
 import makeBiquadFilter from './biquadfilter.js';
 import lfo from './lfo.js';
-
+import makeAnalyser from './waveform.js';
 
 
 export function makeVoice({
@@ -14,6 +14,7 @@ export function makeVoice({
     context,
     n,
     lfoVibrato: lfo({context, frequency: vibratoSpeed}),
+    analyser: makeAnalyser({context, frequency}),
     lfoVibratoAmp: amp({context, vol: vibratoDepth}),
     oscillator1: oscillator({context, n, frequency, oct: oct1, type: type1}),
     oscillator2: oscillator({context, n, frequency, oct: oct2, type: type2}),
@@ -38,8 +39,10 @@ export function makeVoice({
       this.amp1.connect(this.filter1);
       this.amp2.connect(this.filter2);
 
-      this.filter1.connect(volume);
-      this.filter2.connect(volume);
+      this.filter1.connect(this.analyser);
+      this.filter2.connect(this.analyser);
+      this.analyser.connect(volume);
+      this.analyser.connect(volume);
     },
 
     changeFrequency(freq){
@@ -56,7 +59,8 @@ export function makeVoice({
       this.oscillator1.start();
       this.oscillator2.start();
       this.lfoVibrato.start();
-
+      this.analyser.canvasContext.clearRect(0, 0, this.analyser.canvas.width, this.analyser.canvas.height);
+      this.analyser.draw(this.frequency);
     },
     stop(releaseTime){
       this.envelope1.envOff(releaseTime);
@@ -73,8 +77,11 @@ export function makeVoice({
         this.amp1.gain.disconnect(this.filter1.filter);
         this.amp2.gain.disconnect(this.filter2.filter);
 
-        this.filter1.filter.disconnect(volume.gain);
-        this.filter2.filter.disconnect(volume.gain);
+        this.filter1.filter.disconnect(this.analyser.analyser);
+        this.filter2.filter.disconnect(this.analyser.analyser);
+
+        this.analyser.analyser.disconnect(volume);
+        this.analyser.analyser.disconnect(volume);
 
       }, releaseTime * 1000);
     }

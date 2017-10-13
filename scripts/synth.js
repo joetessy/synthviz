@@ -29,8 +29,8 @@ export default function makeSynth(){
     osc2type: 'sine',
     osc1cutoff: 22,
     osc2cutoff: 22,
-    osc1vol: 0.5,
-    osc2vol: 0.25,
+    osc1vol: 0.1,
+    osc2vol: 0.05,
     osc1oct: 1,
     osc2oct: 2,
     envelope: {attack: 0, decay: 0, sustain: .5, release: .5},
@@ -59,10 +59,10 @@ export default function makeSynth(){
       for (let i = 0; i < voiceKeys.length; i++){
         let n = this.activeVoices[voiceKeys[i]].n;
         n += diff;
+        this.activeVoices[voiceKeys[i]].n = n;
         let freq = this.calculateFrequency(n);
         this.activeVoices[voiceKeys[i]].changeFrequency(freq);
       }
-
     },
 
     changeLFO(value, control, type){
@@ -78,7 +78,7 @@ export default function makeSynth(){
             this.tremoloSpeed = value;
             this.tremoloLfo.lfoFrequency.value = value;
           } else {
-            value /= 20000;
+            value /= 1000;
             this.tremoloDepth = value;
             this.tremoloAmp.gain.gain.value = value;
           }
