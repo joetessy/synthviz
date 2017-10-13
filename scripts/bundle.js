@@ -913,17 +913,17 @@ function makeWaveForm({context, frequency}){
   function draw(ctx, freq){
     let color;
     if (freq < 270){
-      color = 'red';
+      color = '#fd0000';
     }else if (freq >= 270 && freq <= 300 ){
-      color = 'orange';
+      color = '#ff9b00';
     } else if (freq > 300 && freq < 350){
-      color = 'yellow';
+      color = '#f5fe01';
     } else if (freq >= 350 && freq <= 400){
-      color = 'green';
+      color = '#3bf00c';
     } else if (freq > 400 && freq <= 500){
-      color = 'blue';
+      color = '#0024ff';
     } else if (freq > 500){
-      color = 'purple';
+      color = '#c500ff';
     }
 
     analyser.getByteTimeDomainData(dataArray);
