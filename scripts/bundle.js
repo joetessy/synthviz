@@ -912,19 +912,19 @@ function makeWaveForm({context, frequency}){
 
   function draw(ctx, freq){
     let color = 'blue';
-    // if (freq < 270){
-    //   color = '#fd0000';
-    // }else if (freq >= 270 && freq <= 300 ){
-    //   color = '#ff9b00';
-    // } else if (freq > 300 && freq < 350){
-    //   color = '#f5fe01';
-    // } else if (freq >= 350 && freq <= 400){
-    //   color = '#3bf00c';
-    // } else if (freq > 400 && freq <= 500){
-    //   color = '#0024ff';
-    // } else if (freq > 500){
-    //   color = '#c500ff';
-    // }
+    if (freq < 270){
+      color = '#ff00f7';
+    }else if (freq >= 270 && freq <= 300 ){
+      color = '#ff00f7';
+    } else if (freq > 300 && freq < 350){
+      color = '#24ff00';
+    } else if (freq >= 350 && freq <= 400){
+      color = '#24ff00';
+    } else if (freq > 400 && freq <= 500){
+      color = '#f8ff00';
+    } else if (freq > 500){
+      color = '#f8ff00';
+    }
 
     analyser.getByteTimeDomainData(dataArray);
     ctx.lineWidth = 1.8;
