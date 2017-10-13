@@ -136,6 +136,41 @@ function makeEnvelope({context}){
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony export (immutable) */ __webpack_exports__["a"] = makeLFO;
+function makeLFO({context, frequency}){
+  let lfo = context.createOscillator(),
+      input = lfo,
+      output = lfo;
+      let lfoFrequency = lfo.frequency;
+      lfo.frequency.value = frequency;
+
+  return {
+    lfo,
+    lfoFrequency,
+    input,
+    output,
+    changeFrequency(newFrequency){
+      this.lfoFrequency.value = newFrequency;      
+    },
+    connect(node){
+      if (node.hasOwnProperty('input')) {
+        output.connect(node.input);
+      } else {
+        output.connect(node);
+      }
+    },
+    start(){
+      lfo.start();
+    }
+  };
+}
+
+
+/***/ }),
+/* 3 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__synth_js__ = __webpack_require__(6);
 
   var synth = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__synth_js__["a" /* default */])();
@@ -444,7 +479,7 @@ const synthView = {
 
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -473,41 +508,6 @@ function makeBiquadFilter({context, cutoff}){
       } else {
         this.output.connect(node);
       }
-    }
-  };
-}
-
-
-/***/ }),
-/* 4 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (immutable) */ __webpack_exports__["a"] = makeLFO;
-function makeLFO({context, frequency}){
-  let lfo = context.createOscillator(),
-      input = lfo,
-      output = lfo;
-      let lfoFrequency = lfo.frequency;
-      lfo.frequency.value = frequency;
-
-  return {
-    lfo,
-    lfoFrequency,
-    input,
-    output,
-    changeFrequency(newFrequency){
-      this.lfoFrequency.value = newFrequency;      
-    },
-    connect(node){
-      if (node.hasOwnProperty('input')) {
-        output.connect(node.input);
-      } else {
-        output.connect(node);
-      }
-    },
-    start(){
-      lfo.start();
     }
   };
 }
@@ -566,7 +566,7 @@ function makeOscillator({context, n, frequency, type, oct}){
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__voice_js__ = __webpack_require__(8);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__envelope_js__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__amp_js__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__lfo_js__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__lfo_js__ = __webpack_require__(2);
 
 
 
@@ -777,7 +777,7 @@ function makeSynth(){
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__synth_view_js__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__synth_view_js__ = __webpack_require__(3);
 
 
 window.synthView = __WEBPACK_IMPORTED_MODULE_0__synth_view_js__["a" /* synthView */];
@@ -797,8 +797,8 @@ document.addEventListener('DOMContentLoaded', function(){
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__oscillator_js__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__amp_js__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__envelope_js__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__biquadfilter_js__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__lfo_js__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__biquadfilter_js__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__lfo_js__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__waveform_js__ = __webpack_require__(9);
 
 
@@ -853,6 +853,7 @@ function makeVoice({
     },
 
     start(envelope){
+      console.log(this.frequency);
       this.envelope1.envOn(envelope.attack, envelope.decay,
           envelope.sustain, this.amp1.amplitude.value);
       this.envelope2.envOn(envelope.attack, envelope.decay,
@@ -910,11 +911,25 @@ function makeWaveForm({context, frequency}){
       output = analyser;
 
   function draw(ctx, freq){
-    // drawVisual = requestAnimationFrame(draw);
-    analyser.getByteTimeDomainData(dataArray);
-    ctx.lineWidth = 1.5;
+    let color;
+    if (freq < 270){
+      color = 'red';
+    }else if (freq >= 270 && freq <= 300 ){
+      color = 'orange';
+    } else if (freq > 300 && freq < 350){
+      color = 'yellow';
+    } else if (freq >= 350 && freq <= 400){
+      color = 'green';
+    } else if (freq > 400 && freq <= 500){
+      color = 'blue';
+    } else if (freq > 500){
+      color = 'purple';
+    }
 
-    ctx.strokeStyle = `rgb(0, 255, 237)`;
+    analyser.getByteTimeDomainData(dataArray);
+    ctx.lineWidth = 1;
+
+    ctx.strokeStyle = color;
     ctx.beginPath();
     var sliceWidth = WIDTH * 1.0 / bufferLength;
     var x = 0;

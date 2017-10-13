@@ -12,11 +12,25 @@ export default function makeWaveForm({context, frequency}){
       output = analyser;
 
   function draw(ctx, freq){
-    // drawVisual = requestAnimationFrame(draw);
-    analyser.getByteTimeDomainData(dataArray);
-    ctx.lineWidth = 1.5;
+    let color;
+    if (freq < 270){
+      color = 'red';
+    }else if (freq >= 270 && freq <= 300 ){
+      color = 'orange';
+    } else if (freq > 300 && freq < 350){
+      color = 'yellow';
+    } else if (freq >= 350 && freq <= 400){
+      color = 'green';
+    } else if (freq > 400 && freq <= 500){
+      color = 'blue';
+    } else if (freq > 500){
+      color = 'purple';
+    }
 
-    ctx.strokeStyle = `rgb(0, 255, 237)`;
+    analyser.getByteTimeDomainData(dataArray);
+    ctx.lineWidth = 1;
+
+    ctx.strokeStyle = color;
     ctx.beginPath();
     var sliceWidth = WIDTH * 1.0 / bufferLength;
     var x = 0;

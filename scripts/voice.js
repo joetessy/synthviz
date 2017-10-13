@@ -51,6 +51,7 @@ export function makeVoice({
     },
 
     start(envelope){
+      console.log(this.frequency);
       this.envelope1.envOn(envelope.attack, envelope.decay,
           envelope.sustain, this.amp1.amplitude.value);
       this.envelope2.envOn(envelope.attack, envelope.decay,
