@@ -59,8 +59,7 @@ export function makeVoice({
       this.oscillator1.start();
       this.oscillator2.start();
       this.lfoVibrato.start();
-      this.analyser.canvasContext.clearRect(0, 0, this.analyser.canvas.width, this.analyser.canvas.height);
-      this.analyser.draw(this.frequency);
+
     },
     stop(releaseTime){
       this.envelope1.envOff(releaseTime);

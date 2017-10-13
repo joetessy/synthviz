@@ -143,6 +143,8 @@ function makeEnvelope({context}){
 const synthView = {
   synth,
   inc: 0,
+  ctx: document.querySelector('#canvas').getContext('2d'),
+  lastTime: 0,
   keys: {
     65: { down: false, n: 40, action: (n) => synthView.startSynth(n) },
     87: { down: false, n: 41, action: (n) => synthView.startSynth(n) },
@@ -164,6 +166,12 @@ const synthView = {
       action: (n) => synthView.octave(n) },
     88: { down: false, type: 'octave', dir: 'up',
       action: (n) => synthView.octave(n) }
+  },
+  animate(time){
+    const timeDelta = time - this.lastTime;
+    this.synth.draw(this.ctx);
+    this.lastTime = time;
+    requestAnimationFrame(this.animate.bind(this));
   },
   octave(obj){
     let oct1, oct2;
@@ -374,6 +382,7 @@ const synthView = {
     this.setUpPresets();
     this.setUpKnobs();
     this.setUpOscillatorTypes();
+    this.animate()
     document.addEventListener('keydown', e => {
       let keyInfo = keys[e.keyCode];
       if (keyInfo) {
@@ -562,6 +571,8 @@ function makeOscillator({context, n, frequency, type, oct}){
 
 
 
+let WIDTH = document.querySelector('#canvas').width;
+let HEIGHT = document.querySelector('#canvas').height;
 
 function makeSynth(){
   var context = new AudioContext();
@@ -612,6 +623,14 @@ function makeSynth(){
       this.activeVoices[n].connect();
       let envelope = this.envelope;
       this.activeVoices[n].start(envelope);
+    },
+    draw(ctx){
+
+      ctx.clearRect(0, 0, WIDTH, HEIGHT);
+      let voiceKeys = Object.keys(this.activeVoices);
+      voiceKeys.forEach((key) => {
+        this.activeVoices[key].analyser.draw(ctx, this.activeVoices[key].frequency);
+      });
     },
 
     updateFrequencies(diff){
@@ -842,8 +861,7 @@ function makeVoice({
       this.oscillator1.start();
       this.oscillator2.start();
       this.lfoVibrato.start();
-      this.analyser.canvasContext.clearRect(0, 0, this.analyser.canvas.width, this.analyser.canvas.height);
-      this.analyser.draw(this.frequency);
+
     },
     stop(releaseTime){
       this.envelope1.envOff(releaseTime);
@@ -881,7 +899,6 @@ function makeVoice({
 function makeWaveForm({context, frequency}){
   let drawVisual;
   let canvas = document.querySelector('#canvas');
-  let canvasContext = canvas.getContext('2d');
   let analyser = context.createAnalyser();
     analyser.fftSize = 2048;
   var bufferLength = analyser.frequencyBinCount;
@@ -892,42 +909,35 @@ function makeWaveForm({context, frequency}){
   let input = analyser,
       output = analyser;
 
-  function draw(freq){
-
-    canvasContext.clearRect(0, 0, WIDTH, HEIGHT);
-    drawVisual = requestAnimationFrame(draw);
+  function draw(ctx, freq){
+    // drawVisual = requestAnimationFrame(draw);
     analyser.getByteTimeDomainData(dataArray);
-    canvasContext.lineWidth = 2;
+    ctx.lineWidth = 1.5;
 
-    canvasContext.strokeStyle = `rgb(0, 255, 237)`;
-    // canvasContext.strokeStyle = `rgb(${a}, ${b}, ${c})`;
-    canvasContext.beginPath();
+    ctx.strokeStyle = `rgb(0, 255, 237)`;
+    ctx.beginPath();
     var sliceWidth = WIDTH * 1.0 / bufferLength;
     var x = 0;
     for(var i = 0; i < bufferLength; i++) {
       var v = dataArray[i] / 128.0;
       var y = v * HEIGHT / 2;
       if(i === 0) {
-        canvasContext.moveTo(x, y);
+        ctx.moveTo(x, y);
       } else {
-        canvasContext.lineTo(x, y);
+        ctx.lineTo(x, y);
       }
       x += sliceWidth;
     }
-    canvasContext.lineTo(canvas.width, canvas.height/2);
-    canvasContext.stroke();
+    ctx.lineTo(canvas.width, canvas.height/2);
+    ctx.stroke();
   }
 
   return {
     analyser,
-    canvas,
-    canvasContext,
     input,
     output,
     draw,
-    calculateColor(frequency){
 
-    },
     connect(node){
       if (node.hasOwnProperty('input')) {
         this.output.connect(node.input);

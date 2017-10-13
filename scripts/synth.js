@@ -2,6 +2,8 @@ import { makeVoice } from './voice.js';
 import makeEnvelope from './envelope.js';
 import amp from './amp.js';
 import lfo from './lfo.js';
+let WIDTH = document.querySelector('#canvas').width;
+let HEIGHT = document.querySelector('#canvas').height;
 
 export default function makeSynth(){
   var context = new AudioContext();
@@ -52,6 +54,14 @@ export default function makeSynth(){
       this.activeVoices[n].connect();
       let envelope = this.envelope;
       this.activeVoices[n].start(envelope);
+    },
+    draw(ctx){
+
+      ctx.clearRect(0, 0, WIDTH, HEIGHT);
+      let voiceKeys = Object.keys(this.activeVoices);
+      voiceKeys.forEach((key) => {
+        this.activeVoices[key].analyser.draw(ctx, this.activeVoices[key].frequency);
+      });
     },
 
     updateFrequencies(diff){

@@ -4,6 +4,8 @@ import makeSynth from './synth.js';
 export const synthView = {
   synth,
   inc: 0,
+  ctx: document.querySelector('#canvas').getContext('2d'),
+  lastTime: 0,
   keys: {
     65: { down: false, n: 40, action: (n) => synthView.startSynth(n) },
     87: { down: false, n: 41, action: (n) => synthView.startSynth(n) },
@@ -25,6 +27,12 @@ export const synthView = {
       action: (n) => synthView.octave(n) },
     88: { down: false, type: 'octave', dir: 'up',
       action: (n) => synthView.octave(n) }
+  },
+  animate(time){
+    const timeDelta = time - this.lastTime;
+    this.synth.draw(this.ctx);
+    this.lastTime = time;
+    requestAnimationFrame(this.animate.bind(this));
   },
   octave(obj){
     let oct1, oct2;
@@ -235,6 +243,7 @@ export const synthView = {
     this.setUpPresets();
     this.setUpKnobs();
     this.setUpOscillatorTypes();
+    this.animate()
     document.addEventListener('keydown', e => {
       let keyInfo = keys[e.keyCode];
       if (keyInfo) {
