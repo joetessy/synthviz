@@ -313,9 +313,85 @@ const synthView = {
       }.bind(this));
     });
   },
+  clearActivePreset(){
+    let presets = document.querySelectorAll('.preset');
+    presets.forEach((preset) => {
+      if (Array.from(preset.classList).includes('active')){
+        preset.classList.remove('active');
+      }
+    });
+  },
 
+  setUpPresets(){
+    let presets = document.querySelectorAll('.preset');
+    presets.forEach((preset) => {
+      preset.addEventListener('click', function(){
+        switch (preset.innerHTML){
+          case '1':
+            this.setPreset(0,7,55,10,50,1,9.18,18,4,12.91,6,5,0,0,'sine', 'sine');
+          break;
+          case '2':
+            this.setPreset(32,7,55,10,50,1,16.74,88,3,12.89,3.5,6,6,76,'sawtooth', 'triangle');
+          break;
+          case '3':
+            this.setPreset(0,7,55,10,50,1,9.18,88,2,12.91,2,2,8.5,84,'triangle', 'triangle');
+          break;
+          case '4':
+            this.setPreset(0,5,0,10,50,1,9.18,88,3,18.88,0,0,0,0,'sawtooth','triangle');
+          break;
+          case '5':
+            this.setPreset(24,0,100,10,50,1,6.62,88,3,11.83,3.5,2,1.5,45,'square', 'sawtooth');
+          break;
+        }
+        this.clearActivePreset();
+        preset.classList.add('active');
+      }.bind(this));
+    });
+  },
+
+  setPreset(attack, decay, sustain, release, osc1vol, osc1oct, osc1cutoff,
+    osc2vol, osc2oct, osc2cutoff, vibratoSpeed, vibratoDepth,
+     tremoloSpeed, tremoloDepth, osc1type, osc2type){
+       $('.knob[data-action="attack"]').val(attack).trigger('change');
+       $('.knob[data-action="decay"]').val(decay).trigger('change');
+       $('.knob[data-action="sustain"]').val(sustain).trigger('change');
+       $('.knob[data-action="release"]').val(release).trigger('change');
+       $('.knob[data-action="oscVolume"].knob[data-osc="1"]').val(osc1vol).trigger('change');
+       $('.knob[data-action="oscVolume"].knob[data-osc="2"]').val(osc2vol).trigger('change');
+       $('.knob[data-action="octave"].knob[data-osc="1"]').val(osc1oct).trigger('change');
+       $('.knob[data-action="octave"].knob[data-osc="2"]').val(osc2oct).trigger('change');
+       $('.knob[data-action="cutoff"].knob[data-osc="1"]').val(osc1cutoff).trigger('change');
+       $('.knob[data-action="cutoff"].knob[data-osc="1"]').val(osc2cutoff).trigger('change');
+       $('.knob[data-action="tremolo-speed"]').val(tremoloSpeed).trigger('change');
+       $('.knob[data-action="tremolo-depth"]').val(tremoloDepth).trigger('change');
+       $('.knob[data-action="vibrato-speed"]').val(vibratoSpeed).trigger('change');
+       $('.knob[data-action="vibrato-depth"]').val(vibratoDepth).trigger('change');
+       document.querySelector(`.osctype[data-type=${osc1type}].osctype[data-osc="1"]`).click();
+       document.querySelector(`.osctype[data-type=${osc2type}].osctype[data-osc="2"]`).click();
+
+
+
+
+      // this.synth.envelope.attack = attack * 2 / 100;
+      // this.synth.envelope.decay = decay * 3 / 100;
+      // this.synth.envelope.sustain = sustain / 100;
+      // this.synth.envelope.relase = release * 2 / 100;
+      // this.synth.osc1vol = osc1vol / 200;
+      // this.synth.osc2vol = osc2vol / 200;
+      // this.synth.osc1oct = osc1oct;
+      // this.synth.osc2oct = osc2oct;
+      // this.synth.osc1cutoff = osc1cutoff;
+      // this.synth.osc2cutoff = osc1cutoff;
+      // this.synth.tremoloDepth = tremoloDepth;
+      // this.synth.tremoloSpeed = tremoloSpeed;
+      // this.synth.vibratoDepth = vibratoDepth;
+      // this.synth.vibratoSpeed = vibratoSpeed;
+      // this.synth.osc1type = osc1type;
+      // this.synth.osc2type = osc2type;
+  },
   start(){
     let keys = this.keys;
+    this.setUpPresets();
     this.setUpKnobs();
     this.setUpOscillatorTypes();
     document.addEventListener('keydown', e => {

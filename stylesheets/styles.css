@@ -83,10 +83,6 @@ h4{
   flex-direction: column;
   align-items: center;
 }
-.active {
-  border-color: #ff00f7;
-  background-color: #ff00f7;
-}
 
 .osccontrol{
   margin-bottom: 10px;
@@ -173,7 +169,12 @@ h4{
   color: black;
 }
 
-.right-controls{
+.bottom {
+  display: flex;
+  justify-content: space-between;
+}
+
+.bottom-right{
   display: flex;
   justify-content: flex-end;
 }
@@ -213,4 +214,29 @@ h4{
 
 .vibrato-speed, .tremolo-speed{
   margin-right: 20px;
+}
+
+.presets {
+  display: flex;
+}
+
+.bottom-left{
+  text-align: center;
+}
+.preset {
+  cursor: pointer;
+  margin: 10px;
+  height: 50px;
+  width: 50px;
+  background-color: white;
+  color: black;
+  border-radius: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.active {
+  border-color: #ff00f7;
+  background-color: #ff00f7;
 }
