@@ -243,7 +243,7 @@ export const synthView = {
     this.setUpPresets();
     this.setUpKnobs();
     this.setUpOscillatorTypes();
-    this.animate()
+    this.animate();
     document.addEventListener('keydown', e => {
       let keyInfo = keys[e.keyCode];
       if (keyInfo) {
