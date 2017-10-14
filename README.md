@@ -2,7 +2,7 @@
 
 [SynthViz](https://www.joetessy.life/synthviz "SynthViz") is a polyphonic dual oscillator synthesizer and audio visualizer.
 
-![SynthViz Gif](./images/synthviz.gif)
+![SynthViz Gif](./images/synthgif.gif)
 
 ## Technologies
 
