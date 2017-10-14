@@ -377,16 +377,16 @@ const synthView = {
             this.setPreset(0,7,55,10,50,1,9.18,18,4,12.91,6,5,0,0,'sine', 'sine');
           break;
           case '2':
-            this.setPreset(32,7,55,10,50,1,16.74,88,3,12.89,3.5,6,6,76,'sawtooth', 'triangle');
+            this.setPreset(32,7,55,10,40,1,16.74,55,3,12.89,3.5,6,6,76,'sawtooth', 'triangle');
           break;
           case '3':
-            this.setPreset(0,7,55,10,50,1,9.18,88,2,12.91,2,2,8.5,84,'triangle', 'triangle');
+            this.setPreset(0,7,55,10,40,1,9.18,55,2,12.91,2,2,8.5,84,'triangle', 'triangle');
           break;
           case '4':
-            this.setPreset(0,5,0,10,50,1,9.18,88,3,18.88,0,0,0,0,'sawtooth','triangle');
+            this.setPreset(0,5,0,10,40,1,9.18,55,3,18.88,0,0,0,0,'sawtooth','triangle');
           break;
           case '5':
-            this.setPreset(24,0,100,10,50,1,6.62,88,3,11.83,3.5,2,1.5,45,'square', 'sawtooth');
+            this.setPreset(24,0,100,10,40,1,6.62,55,3,11.83,3.5,2,1.5,45,'square', 'sawtooth');
           break;
         }
         this.clearActivePreset();
