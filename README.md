@@ -1,8 +1,8 @@
-# WebFX
+# SynthViz
 
 [SynthViz](https://www.joetessy.life/synthviz "SynthViz") is a polyphonic dual oscillator synthesizer and audio visualizer.
 
-![alt text](./docs/webfx.png)
+![SynthViz Gif](./images/synthviz.gif)
 
 ## Technologies
 
