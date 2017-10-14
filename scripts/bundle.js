@@ -109,8 +109,9 @@ function makeEnvelope({context}){
   let envelope = {
 
     envOn(attackTime, decayTime, sustainVal, amplitude){
-      console.log(amplitude);
-
+      console.log('amplitude is ' + amplitude);
+      console.log('sustainVal is ' + sustainVal);
+      console.log('amp * sustain is ' + amplitude * sustainVal);
       let now = context.currentTime;
       this.param.cancelScheduledValues(now);
       this.param.setValueAtTime(0, now);
@@ -313,7 +314,7 @@ const synthView = {
               jQuery.event.trigger('setDecay', 3 * v / 100);
               break;
             case 'sustain':
-              jQuery.event.trigger('setSustain', (v / 100 * .5));
+              jQuery.event.trigger('setSustain', (v / 100));
               break;
             case 'release':
               jQuery.event.trigger('setRelease', 2 * v / 100);
@@ -470,8 +471,11 @@ const synthView = {
     this.synth.tremoloLfo.connect(this.synth.tremoloAmp);
     this.synth.tremoloAmp.connect(this.synth.volume.gain.gain);
 
-    this.synth.volume.connect(this.synth.compressor);
-    this.synth.compressor.connect(this.synth.context.destination);
+
+    this.synth.volume.connect(this.synth.context.destination);
+
+    // this.synth.volume.connect(this.synth.compressor);
+    // this.synth.compressor.connect(this.synth.context.destination);
     this.synth.tremoloLfo.start();
 
   },
@@ -602,11 +606,11 @@ function makeSynth(){
     osc2type: 'sine',
     osc1cutoff: 22,
     osc2cutoff: 22,
-    osc1vol: 0.1,
-    osc2vol: 0.05,
+    osc1vol: 0.05,
+    osc2vol: 0.025,
     osc1oct: 1,
     osc2oct: 2,
-    envelope: {attack: 0, decay: 0, sustain: .5, release: .5},
+    envelope: {attack: 0, decay: 0, sustain: 1, release: .5},
     start(key){
       let n = key.n;
       let frequency = this.calculateFrequency(n);
@@ -855,8 +859,6 @@ function makeVoice({
     },
 
     start(envelope){
-      console.log(this.amp1.amplitude.value);
-      console.log(this.amp2.amplitude.value);
       this.envelope1.envOn(envelope.attack, envelope.decay,
           envelope.sustain, this.amp1.amplitude.value);
       this.envelope2.envOn(envelope.attack, envelope.decay,

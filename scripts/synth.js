@@ -31,11 +31,11 @@ export default function makeSynth(){
     osc2type: 'sine',
     osc1cutoff: 22,
     osc2cutoff: 22,
-    osc1vol: 0.1,
-    osc2vol: 0.05,
+    osc1vol: 0.05,
+    osc2vol: 0.025,
     osc1oct: 1,
     osc2oct: 2,
-    envelope: {attack: 0, decay: 0, sustain: .5, release: .5},
+    envelope: {attack: 0, decay: 0, sustain: 1, release: .5},
     start(key){
       let n = key.n;
       let frequency = this.calculateFrequency(n);

@@ -137,7 +137,7 @@ export const synthView = {
               jQuery.event.trigger('setDecay', 3 * v / 100);
               break;
             case 'sustain':
-              jQuery.event.trigger('setSustain', (v / 100 * .5));
+              jQuery.event.trigger('setSustain', (v / 100));
               break;
             case 'release':
               jQuery.event.trigger('setRelease', 2 * v / 100);
@@ -294,8 +294,11 @@ export const synthView = {
     this.synth.tremoloLfo.connect(this.synth.tremoloAmp);
     this.synth.tremoloAmp.connect(this.synth.volume.gain.gain);
 
-    this.synth.volume.connect(this.synth.compressor);
-    this.synth.compressor.connect(this.synth.context.destination);
+
+    this.synth.volume.connect(this.synth.context.destination);
+
+    // this.synth.volume.connect(this.synth.compressor);
+    // this.synth.compressor.connect(this.synth.context.destination);
     this.synth.tremoloLfo.start();
 
   },
