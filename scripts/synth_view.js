@@ -144,9 +144,9 @@ export const synthView = {
               break;
             case 'oscVolume':
               if (this.$[0].dataset.osc === '1'){
-                that.synth.changeOscVolume(v/1000, 1);
+                that.synth.changeOscVolume(v/1200, 1);
               } else {
-                that.synth.changeOscVolume(v/1000, 2);
+                that.synth.changeOscVolume(v/1200, 2);
               }
               break;
             case 'octave':

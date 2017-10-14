@@ -321,9 +321,9 @@ const synthView = {
               break;
             case 'oscVolume':
               if (this.$[0].dataset.osc === '1'){
-                that.synth.changeOscVolume(v/1000, 1);
+                that.synth.changeOscVolume(v/1200, 1);
               } else {
-                that.synth.changeOscVolume(v/1000, 2);
+                that.synth.changeOscVolume(v/1200, 2);
               }
               break;
             case 'octave':
@@ -606,8 +606,8 @@ function makeSynth(){
     osc2type: 'sine',
     osc1cutoff: 22,
     osc2cutoff: 22,
-    osc1vol: 0.05,
-    osc2vol: 0.025,
+    osc1vol: 0.0416,
+    osc2vol: 0.0208,
     osc1oct: 1,
     osc2oct: 2,
     envelope: {attack: 0, decay: 0, sustain: 1, release: .5},
