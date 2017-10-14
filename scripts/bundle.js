@@ -472,10 +472,8 @@ const synthView = {
     this.synth.tremoloAmp.connect(this.synth.volume.gain.gain);
 
 
-    this.synth.volume.connect(this.synth.context.destination);
-
-    // this.synth.volume.connect(this.synth.compressor);
-    // this.synth.compressor.connect(this.synth.context.destination);
+    this.synth.volume.connect(this.synth.compressor);
+    this.synth.compressor.connect(this.synth.context.destination);
     this.synth.tremoloLfo.start();
 
   },
@@ -583,7 +581,7 @@ let HEIGHT = document.querySelector('#canvas').height;
 function makeSynth(){
   var context = new AudioContext();
   var compressor = context.createDynamicsCompressor();
-  compressor.threshold.value = -50;
+  compressor.threshold.value = -45;
   compressor.knee.value = 40;
   compressor.ratio.value = 12;
   compressor.attack.value = .25;

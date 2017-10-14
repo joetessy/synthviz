@@ -8,7 +8,7 @@ let HEIGHT = document.querySelector('#canvas').height;
 export default function makeSynth(){
   var context = new AudioContext();
   var compressor = context.createDynamicsCompressor();
-  compressor.threshold.value = -50;
+  compressor.threshold.value = -45;
   compressor.knee.value = 40;
   compressor.ratio.value = 12;
   compressor.attack.value = .25;
