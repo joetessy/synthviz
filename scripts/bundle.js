@@ -109,9 +109,6 @@ function makeEnvelope({context}){
   let envelope = {
 
     envOn(attackTime, decayTime, sustainVal, amplitude){
-      console.log('amplitude is ' + amplitude);
-      console.log('sustainVal is ' + sustainVal);
-      console.log('amp * sustain is ' + amplitude * sustainVal);
       let now = context.currentTime;
       this.param.cancelScheduledValues(now);
       this.param.setValueAtTime(0, now);
@@ -621,7 +618,7 @@ function makeSynth(){
           tremoloSpeed = this.tremoloSpeed, tremoloDepth = this.tremoloDepth;
       this.activeVoices[n] =
         __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__voice_js__["a" /* makeVoice */])({
-          context, n, frequency, volume, type1, type2,
+          context, n, frequency, volume: this.volume, type1, type2,
           vol1, vol2, oct1, oct2, cutoff1, cutoff2, res1, res2,
           vibratoSpeed, vibratoDepth, tremoloSpeed, tremoloDepth});
       this.activeVoices[n].connect();
@@ -784,9 +781,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__synth_view_js__ = __webpack_require__(3);
 
 
-window.synthView = __WEBPACK_IMPORTED_MODULE_0__synth_view_js__["a" /* synthView */];
-window.synth = __WEBPACK_IMPORTED_MODULE_0__synth_view_js__["a" /* synthView */].synth;
-window.envelope = window.synth.envelope;
 document.addEventListener('DOMContentLoaded', function(){
   __WEBPACK_IMPORTED_MODULE_0__synth_view_js__["a" /* synthView */].start();
 });
@@ -819,6 +813,7 @@ function makeVoice({
     frequency,
     context,
     n,
+    volume,
     lfoVibrato: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4__lfo_js__["a" /* default */])({context, frequency: vibratoSpeed}),
     analyser: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_5__waveform_js__["a" /* default */])({context, frequency}),
     lfoVibratoAmp: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__amp_js__["a" /* default */])({context, vol: vibratoDepth}),
@@ -847,8 +842,8 @@ function makeVoice({
 
       this.filter1.connect(this.analyser);
       this.filter2.connect(this.analyser);
-      this.analyser.connect(volume);
-      this.analyser.connect(volume);
+      this.analyser.connect(this.volume);
+      this.analyser.connect(this.volume);
     },
 
     changeFrequency(freq){
@@ -885,8 +880,7 @@ function makeVoice({
         this.filter1.filter.disconnect(this.analyser.analyser);
         this.filter2.filter.disconnect(this.analyser.analyser);
 
-        this.analyser.analyser.disconnect(volume);
-        this.analyser.analyser.disconnect(volume);
+        this.analyser.analyser.disconnect(this.volume.gain);
 
       }, releaseTime * 1000);
     }

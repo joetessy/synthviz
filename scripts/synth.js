@@ -48,7 +48,7 @@ export default function makeSynth(){
           tremoloSpeed = this.tremoloSpeed, tremoloDepth = this.tremoloDepth;
       this.activeVoices[n] =
         makeVoice({
-          context, n, frequency, volume, type1, type2,
+          context, n, frequency, volume: this.volume, type1, type2,
           vol1, vol2, oct1, oct2, cutoff1, cutoff2, res1, res2,
           vibratoSpeed, vibratoDepth, tremoloSpeed, tremoloDepth});
       this.activeVoices[n].connect();

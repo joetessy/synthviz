@@ -13,6 +13,7 @@ export function makeVoice({
     frequency,
     context,
     n,
+    volume,
     lfoVibrato: lfo({context, frequency: vibratoSpeed}),
     analyser: makeAnalyser({context, frequency}),
     lfoVibratoAmp: amp({context, vol: vibratoDepth}),
@@ -41,8 +42,8 @@ export function makeVoice({
 
       this.filter1.connect(this.analyser);
       this.filter2.connect(this.analyser);
-      this.analyser.connect(volume);
-      this.analyser.connect(volume);
+      this.analyser.connect(this.volume);
+      this.analyser.connect(this.volume);
     },
 
     changeFrequency(freq){
@@ -79,8 +80,7 @@ export function makeVoice({
         this.filter1.filter.disconnect(this.analyser.analyser);
         this.filter2.filter.disconnect(this.analyser.analyser);
 
-        this.analyser.analyser.disconnect(volume);
-        this.analyser.analyser.disconnect(volume);
+        this.analyser.analyser.disconnect(this.volume.gain);
 
       }, releaseTime * 1000);
     }
