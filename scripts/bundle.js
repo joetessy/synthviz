@@ -866,6 +866,8 @@ function makeVoice({
       this.envelope1.envOff(releaseTime);
       this.envelope2.envOff(releaseTime);
       setTimeout(() => {
+        this.oscillator1.oscillator.stop();
+        this.oscillator2.oscillator.stop();
         this.lfoVibrato.lfo.disconnect(this.lfoVibratoAmp.gain);
 
         this.lfoVibratoAmp.gain.disconnect(this.oscillator1.oscillator.frequency);
