@@ -275,9 +275,36 @@ h4{
 }
 
 .github {
-
   margin-bottom: -2px;
   cursor: pointer;
   height: 25px;
   width: 25px;
+}
+
+.bottom-middle{
+  align-self: center;
+}
+
+.toggle-controls{
+  height: 50px;
+  width: 50px;
+  background-color: white;
+  border-radius: 100%;
+  color: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  margin: 30px;
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.active {
+  border-color: #ff00f7;
+  background-color: #ff00f7;
+}
+
+.hide {
+  display: none;
 }

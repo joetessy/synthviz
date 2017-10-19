@@ -364,8 +364,40 @@ const synthView = {
       }
     });
   },
+  setUpShowHide(){
+    let envelope = document.querySelector('.envelope');
+    let header = document.querySelector('h2');
+    let oscillators = document.querySelector('.oscillator-controls');
+    let bottomLeft = document.querySelector('.bottom-left');
+    let bottomRight = document.querySelector('.bottom-right');
+
+    let hideButton = document.querySelector('.toggle-controls');
+
+    hideButton.addEventListener('click', () => {
+      if (Array.from(hideButton.classList).includes('active')){
+        hideButton.classList.remove('active');
+        hideButton.innerHTML = 'Hide';
+        envelope.classList.remove('hide');
+        oscillators.classList.remove('hide');
+        bottomLeft.classList.remove('hide');
+        bottomRight.classList.remove('hide');
+        header.classList.remove('hide');
+      } else {
+        hideButton.classList.add('active');
+        hideButton.innerHTML = 'Show';
+        envelope.classList.add('hide');
+        bottomLeft.classList.add('hide');
+        bottomRight.classList.add('hide');
+        oscillators.classList.add('hide');
+        header.classList.add('hide');
+      }
+    });
+
+  },
 
   setUpPresets(){
+    this.setUpShowHide();
+
     let presets = document.querySelectorAll('.preset');
     presets.forEach((preset) => {
       preset.addEventListener('click', function(){
