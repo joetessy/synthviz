@@ -214,6 +214,7 @@ h4{
 
 .tuner{
   margin: 0 20px;
+  margin-top: 9px;
 }
 
 .lfo-on-off{
@@ -296,7 +297,8 @@ h4{
   align-items: center;
   cursor: pointer;
   margin: 30px;
-  font-size: 15px;
+  margin-top: 33px;
+  font-size: 12px;
   font-weight: bold;
 }
 

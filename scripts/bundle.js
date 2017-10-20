@@ -376,7 +376,7 @@ const synthView = {
     hideButton.addEventListener('click', () => {
       if (Array.from(hideButton.classList).includes('active')){
         hideButton.classList.remove('active');
-        hideButton.innerHTML = 'Hide';
+        hideButton.innerHTML = 'HIDE';
         envelope.classList.remove('hide');
         oscillators.classList.remove('hide');
         bottomLeft.classList.remove('hide');
@@ -384,7 +384,7 @@ const synthView = {
         header.classList.remove('hide');
       } else {
         hideButton.classList.add('active');
-        hideButton.innerHTML = 'Show';
+        hideButton.innerHTML = 'SHOW';
         envelope.classList.add('hide');
         bottomLeft.classList.add('hide');
         bottomRight.classList.add('hide');
