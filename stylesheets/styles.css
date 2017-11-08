@@ -8,6 +8,9 @@
 
 body {
   margin-left: 30px;
+  background-color: black;
+  color: #ff00f7;
+  font-family: sans-serif
 }
 
 a {
@@ -35,13 +38,6 @@ header h2{
   color: white;
   font-size: 22px;
   padding-left: 10px;
-}
-
-body {
-  margin: 0;
-  background-color: black;
-  color: #ff00f7;
-  font-family: sans-serif
 }
 
 h1, h2, h4 {
