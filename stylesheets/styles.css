@@ -7,10 +7,13 @@
 }
 
 body {
-  margin-left: 30px;
   background-color: black;
   color: #ff00f7;
   font-family: sans-serif
+}
+
+body > div {
+  margin-left: 30px;
 }
 
 a {
