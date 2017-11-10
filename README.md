@@ -6,7 +6,7 @@
 
 ## Technologies
 
-SynthViz uses Google's Web Audio API controlling the synthesizer and HTML5 canvas for displaying the audio visualization and has the following features. It comes with preset sounds for users unfamiliar with electronic audio concepts.
+SynthViz uses the Web Audio API to control the synthesizer and HTML5 canvas for displaying the audio visualization. It comes with preset sounds for users unfamiliar with electronic audio concepts.
 
 ### Computer Keyboard Mapping
 
