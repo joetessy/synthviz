@@ -1,6 +1,6 @@
 # SynthViz
 
-[SynthViz](https://www.joetessy.life/synthviz "SynthViz") is a polyphonic dual oscillator synthesizer and audio visualizer.
+[SynthViz](https://www.joetessy.github.io/synthviz "SynthViz") is a polyphonic dual oscillator synthesizer and audio visualizer.
 
 ![SynthViz Gif](./images/synthgif.gif)
 
