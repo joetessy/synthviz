@@ -31,11 +31,13 @@ const makeAnalyser = (context: AudioContext, _frequency: number): AnalyserWrappe
     ctx.lineWidth = 3.5 * dpr
     ctx.strokeStyle = color
     ctx.beginPath()
+    const pad = Math.ceil(ctx.lineWidth / 2) + Math.round(HEIGHT * 0.05)
+    const usableHeight = HEIGHT - 2 * pad
     const sliceWidth = WIDTH / bufferLength
     let x = 0
     for (let i = 0; i < bufferLength; i++) {
       const v = dataArray[i] / 128.0
-      const y = v * HEIGHT / 2
+      const y = pad + (v / 2) * usableHeight
       if (i === 0) {
         ctx.moveTo(x, y)
       } else {

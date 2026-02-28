@@ -39,6 +39,11 @@ const makeSynth = (): Synth => {
     start: (key: KeyInfo) => {
       const n = key.n
       const frequency = synth.calculateFrequency(n)
+      // If another key detuned into this slot, stop it now to prevent ghost notes
+      if (synth.activeVoices[n]) {
+        synth.activeVoices[n].stop(0)
+        delete synth.activeVoices[n]
+      }
       synth.activeVoices[n] = makeVoice(
         context, n, frequency, volume,
         synth.osc1type, synth.osc2type,
@@ -158,20 +163,16 @@ const makeSynth = (): Synth => {
     stop: (n: number) => {
       n = synth.handleOctaveChange(n)
       const voice = synth.activeVoices[n]
+      if (!voice) return
       voice.stop(synth.envelope.release)
       delete synth.activeVoices[n]
     },
 
     handleOctaveChange: (n: number) => {
-      let order = 1
-      while (!synth.activeVoices[n]) {
-        const inc = 12
-        if (synth.activeVoices[n + (inc * order)]) {
-          n = n + (inc * order)
-        } else if (synth.activeVoices[n - (inc * order)]) {
-          n = n - (inc * order)
-        }
-        order += 1
+      if (synth.activeVoices[n]) return n
+      for (let order = 1; order <= 10; order++) {
+        if (synth.activeVoices[n + 12 * order]) return n + 12 * order
+        if (synth.activeVoices[n - 12 * order]) return n - 12 * order
       }
       return n
     },

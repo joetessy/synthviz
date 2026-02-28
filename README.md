@@ -1,8 +1,8 @@
 # SynthViz
 
-[SynthViz](https://www.joetessy.github.io/synthviz "SynthViz") is a polyphonic dual oscillator synthesizer and audio visualizer.
+[SynthViz](https://synthviz.com "SynthViz") is a polyphonic dual oscillator synthesizer and audio visualizer.
 
-![SynthViz Gif](./images/synthgif.gif)
+![SynthViz](./images/SYNTHVIZ.gif)
 
 ## Technologies
 
@@ -15,27 +15,22 @@ npm install
 npm run build    # or: npm run dev (watch mode)
 ```
 
-Open `index.html` (classic UI) or `index-v2.html` (Phosphor Dark UI) directly in a browser after building.
+The compiled bundle at `dist/bundle.js` is committed to the repo so GitHub Pages can serve it without a build step.
+
+Open `index.html` directly in a browser after building, or visit the live site:
+
+- **[synthviz.com](https://synthviz.com)** — Dark UI
+- **[synthviz.com/legacy](https://synthviz.com/legacy)** — Classic UI
 
 ## UI Versions
 
-### Classic UI (`index.html`)
-
-The original neon interface — hot pink accents on black, PNG waveform icons.
-
-### Phosphor Dark UI (`index-v2.html`)
+### Dark UI (`index.html` → `synthviz.com`)
 
 A redesigned interface inspired by hardware synthesizers and oscilloscope phosphor displays.
 
-![SynthViz Phosphor Dark UI](./images/synthviz-v2-sine.png)
+### Classic UI (`legacy/index.html` → `synthviz.com/legacy`)
 
-- **Color scheme:** near-black background (`#080808`) with electric chartreuse (`#b4ff00`) accents
-- **Font:** DM Mono — monospace, technical, refined
-- **Layout:** visualization canvas fills the screen above a fixed control panel pinned to the bottom
-- **Keyboard:** full-width piano with active keys highlighted in chartreuse
-- **Controls:** sectioned into OSC 1, OSC 2, Envelope, Vibrato, Tremolo, Presets, and Tune modules
-- **Waveform buttons:** inline SVG wave shapes (sine, square, sawtooth, triangle) — no image files
-- **Knobs:** 52×52 canvas knobs with phosphor-green fill arc and dark track
+The original neon interface (2017) — hot pink accents on black, PNG waveform icons.
 
 ### Computer Keyboard Mapping
 

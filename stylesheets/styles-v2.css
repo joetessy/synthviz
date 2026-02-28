@@ -5,7 +5,7 @@
   --surface: #0f0f0f;
   --border: #1e1e1e;
   --text: #b8b8b8;
-  --muted: #3a3a3a;
+  --muted: #5a5a5a;
   --accent: #b4ff00;
   --accent-glow: rgba(180,255,0,0.12);
   --key-white: #d0d0d0;
@@ -58,8 +58,8 @@ body {
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  padding: 8px 16px 0;
-  height: 105px;
+  padding: 0 16px;
+  height: 100px;
   flex-shrink: 0;
   overflow: hidden;
 }
@@ -68,14 +68,14 @@ body {
   display: flex;
   align-items: flex-end;
   position: relative;
-  height: 90px;
+  height: 100px;
 }
 
 .white {
   background: var(--key-white);
   position: relative;
   width: 24px;
-  height: 88px;
+  height: 100px;
   border: 1px solid #666;
   border-top: none;
   display: flex;
@@ -90,7 +90,7 @@ body {
   background: var(--key-black);
   position: absolute;
   width: 15px;
-  height: 54px;
+  height: 62px;
   top: 0;
   left: 15px;
   z-index: 2;
@@ -112,19 +112,19 @@ body {
 
 .boardkey {
   font-size: 7px;
-  color: #888;
+  color: #333;
   margin-bottom: 3px;
   letter-spacing: 0;
   user-select: none;
 }
 
 .black .boardkey {
-  color: #444;
+  color: #ccc;
   font-size: 6px;
 }
 
-.playwhite .boardkey,
-.playblack .boardkey {
+.playwhite > .boardkey,
+.playblack > .boardkey {
   color: #000;
 }
 
@@ -133,7 +133,7 @@ body {
 .controls-strip {
   display: flex;
   flex: 1;
-  overflow: hidden;
+  overflow-x: auto;
   padding-bottom: 6px;
 }
 
@@ -212,6 +212,12 @@ body {
   border-color: var(--accent);
   color: var(--accent);
   background: var(--accent-glow);
+}
+
+.osctype.dirty {
+  border-color: #ff9900;
+  color: #ff9900;
+  background: rgba(255, 153, 0, 0.12);
 }
 
 /* ── Knob Row ─────────────────────────────────────────── */
@@ -293,7 +299,20 @@ body {
 
 .preset-row {
   display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.preset-row-builtin {
+  display: flex;
   gap: 4px;
+  flex-wrap: nowrap;
+}
+
+.preset-row-user {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
 }
 
 .preset {
@@ -321,6 +340,114 @@ body {
   border-color: var(--accent);
   color: var(--accent);
   background: var(--accent-glow);
+}
+
+.preset.dirty {
+  border-color: #ff9900;
+  color: #ff9900;
+  background: rgba(255, 153, 0, 0.08);
+}
+
+/* ── User preset buttons ──────────────────────────────── */
+
+.preset.user-preset {
+  width: auto;
+  min-width: 28px;
+  padding: 0 6px;
+  gap: 4px;
+}
+
+.preset-name-label {
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.preset-rename {
+  display: none;
+  font-size: 9px;
+  opacity: 0.6;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.preset.user-preset:hover .preset-rename {
+  display: inline;
+}
+
+.preset-delete {
+  font-size: 11px;
+  line-height: 1;
+  opacity: 0.5;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: opacity 0.1s;
+}
+
+.preset-delete:hover {
+  opacity: 1;
+  color: #ff4444;
+}
+
+.preset-new {
+  font-size: 14px;
+  opacity: 0.5;
+  transition: opacity 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.preset-new:hover {
+  opacity: 1;
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ── Preset action buttons ────────────────────────────── */
+
+.preset-actions {
+  display: flex;
+  gap: 4px;
+  margin-top: 5px;
+}
+
+.preset-save-btn,
+.preset-reset-btn {
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  background: none;
+  border: 1px solid #ff9900;
+  color: #ff9900;
+  padding: 2px 6px;
+  border-radius: 2px;
+  transition: background 0.15s;
+}
+
+.preset-save-btn:hover {
+  background: rgba(255, 153, 0, 0.15);
+}
+
+.preset-reset-btn {
+  border-color: var(--muted);
+  color: var(--muted);
+}
+
+.preset-reset-btn:hover {
+  border-color: #888;
+  color: #888;
+}
+
+/* ── Inline rename input ──────────────────────────────── */
+
+.preset-name-input {
+  width: 60px;
+  background: #111;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  font-family: inherit;
+  font-size: 9px;
+  padding: 1px 3px;
+  outline: none;
+  border-radius: 1px;
 }
 
 /* ── Footer ───────────────────────────────────────────── */
@@ -366,8 +493,94 @@ footer {
   color: var(--accent);
 }
 
+.contact-link {
+  font-size: 8px;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.contact-link:hover {
+  color: var(--text);
+}
+
 /* ── Hide utility ─────────────────────────────────────── */
 
 .hide {
   display: none !important;
+}
+
+/* ── Mobile ───────────────────────────────────────────── */
+
+@media (pointer: coarse) {
+  .boardkey {
+    display: none;
+  }
+}
+
+/* ── Custom confirm dialog ────────────────────────────── */
+
+.sv-confirm {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.sv-confirm-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 220px;
+}
+
+.sv-confirm-msg {
+  font-size: 11px;
+  color: var(--text);
+  letter-spacing: 0.04em;
+  line-height: 1.5;
+}
+
+.sv-confirm-btns {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.sv-confirm-ok,
+.sv-confirm-cancel {
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 8px;
+  letter-spacing: 0.12em;
+  background: none;
+  padding: 3px 10px;
+  border-radius: 2px;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.sv-confirm-ok {
+  border: 1px solid #ff4444;
+  color: #ff4444;
+}
+
+.sv-confirm-ok:hover {
+  background: rgba(255, 68, 68, 0.15);
+}
+
+.sv-confirm-cancel {
+  border: 1px solid var(--muted);
+  color: var(--muted);
+}
+
+.sv-confirm-cancel:hover {
+  border-color: #888;
+  color: #888;
 }

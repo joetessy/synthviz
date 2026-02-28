@@ -10,7 +10,7 @@ const makeFilter = (context: AudioContext, cutoff = 22): FilterWrapper => {
     frequency: filter.frequency,
     input: filter,
     output: filter,
-    changeFilter: (newFreq: number) => { filter.frequency.value = newFreq },
+    changeFilter: (newFreq: number) => { filter.frequency.value = newFreq * 1000 },
     connect: (node: AudioWrapper | AudioNode | AudioParam) => {
       if ('input' in node) filter.connect(node.input as AudioNode)
       else if (node instanceof AudioParam) filter.connect(node)

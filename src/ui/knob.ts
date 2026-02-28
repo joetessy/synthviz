@@ -3,6 +3,7 @@ type KnobState = {
   min: number
   max: number
   step: number
+  onChange: (v: number) => void
   onRelease: (v: number) => void
 }
 
@@ -57,9 +58,17 @@ export const initKnob = (
   max: number,
   step: number,
   initial: number,
-  onRelease: (v: number) => void
+  onChange: (v: number) => void,
+  onRelease?: (v: number) => void
 ) => {
-  const state: KnobState = { value: initial, min, max, step, onRelease }
+  const state: KnobState = {
+    value: initial,
+    min,
+    max,
+    step,
+    onChange,
+    onRelease: onRelease ?? onChange
+  }
   knobMap.set(canvas, state)
   drawKnob(canvas, state)
 
@@ -73,6 +82,7 @@ export const initKnob = (
     const stepped = Math.round(newValue / step) * step
     state.value = Math.min(max, Math.max(min, stepped))
     drawKnob(canvas, state)
+    state.onChange(state.value)
   }
 
   const onMouseUp = () => {
@@ -87,6 +97,27 @@ export const initKnob = (
     document.addEventListener('mousemove', onMouseMove)
     document.addEventListener('mouseup', onMouseUp)
     e.preventDefault()
+  })
+
+  canvas.addEventListener('touchstart', (e: TouchEvent) => {
+    startY = e.touches[0].clientY
+    startValue = state.value
+    e.preventDefault()
+  }, { passive: false })
+
+  canvas.addEventListener('touchmove', (e: TouchEvent) => {
+    const delta = startY - e.touches[0].clientY
+    const range = max - min
+    const newValue = Math.min(max, Math.max(min, startValue + (delta / 150) * range))
+    const stepped = Math.round(newValue / step) * step
+    state.value = Math.min(max, Math.max(min, stepped))
+    drawKnob(canvas, state)
+    state.onChange(state.value)
+    e.preventDefault()
+  }, { passive: false })
+
+  canvas.addEventListener('touchend', () => {
+    state.onRelease(state.value)
   })
 }
 
@@ -103,4 +134,12 @@ export const getKnob = (action: string, osc?: string): HTMLCanvasElement => {
     ? `canvas.knob[data-action="${action}"][data-osc="${osc}"]`
     : `canvas.knob[data-action="${action}"]`
   return document.querySelector(selector) as HTMLCanvasElement
+}
+
+export const getKnobValue = (canvas: HTMLCanvasElement): number =>
+  knobMap.get(canvas)?.value ?? 0
+
+export const redrawKnob = (canvas: HTMLCanvasElement): void => {
+  const state = knobMap.get(canvas)
+  if (state) drawKnob(canvas, state)
 }

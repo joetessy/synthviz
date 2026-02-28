@@ -24,7 +24,8 @@ const makeOscillator = (
     changeType: (newType: OscillatorType) => { oscillator.type = newType },
     changeFrequency: (freq: number) => { oscillator.frequency.value = freq },
     changeOctave: (octave: number) => {
-      wrapper.frequency = wrapper.frequency * Math.pow(2, octave - 1)
+      wrapper.oct = octave
+      oscillator.frequency.value = wrapper.frequency * Math.pow(2, octave - 1)
     },
     connect: (node: AudioWrapper | AudioNode | AudioParam) => {
       if ('input' in node) oscillator.connect(node.input as AudioNode)

@@ -120,3 +120,19 @@ export interface KeyInfo {
   origin?: number
   action: (info: KeyInfo) => void
 }
+
+export interface PresetParams {
+  attack: number; decay: number; sustain: number; release: number
+  osc1vol: number; osc1oct: number; osc1cutoff: number
+  osc2vol: number; osc2oct: number; osc2cutoff: number
+  vibratoSpeed: number; vibratoDepth: number
+  tremoloSpeed: number; tremoloDepth: number
+  osc1type: OscillatorType; osc2type: OscillatorType
+}
+
+export interface PresetData {
+  id: string
+  name: string
+  isBuiltIn: boolean
+  params: PresetParams
+}
