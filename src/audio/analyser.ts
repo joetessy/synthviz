@@ -3,13 +3,16 @@ import type { AnalyserWrapper, AudioWrapper } from '../types'
 const makeAnalyser = (context: AudioContext, _frequency: number): AnalyserWrapper => {
   const canvas = document.querySelector('#canvas') as HTMLCanvasElement
   const analyser = context.createAnalyser()
-  analyser.fftSize = 2048
+  analyser.fftSize = 4096
+  analyser.smoothingTimeConstant = 0
   const bufferLength = analyser.frequencyBinCount
   const dataArray = new Uint8Array(bufferLength)
-  const WIDTH = canvas.width
-  const HEIGHT = canvas.height
 
   const draw = (ctx: CanvasRenderingContext2D, freq: number) => {
+    const WIDTH = canvas.width
+    const HEIGHT = canvas.height
+    const dpr = window.devicePixelRatio || 1
+
     let color = '#ff00f7'
     if (freq > 300 && freq <= 400) {
       color = '#24ff00'
@@ -18,10 +21,17 @@ const makeAnalyser = (context: AudioContext, _frequency: number): AnalyserWrappe
     }
 
     analyser.getByteTimeDomainData(dataArray)
-    ctx.lineWidth = 1.8
+
+    let hasSignal = false
+    for (let i = 0; i < bufferLength; i++) {
+      if (Math.abs(dataArray[i] - 128) > 2) { hasSignal = true; break }
+    }
+    if (!hasSignal) return
+
+    ctx.lineWidth = 3.5 * dpr
     ctx.strokeStyle = color
     ctx.beginPath()
-    const sliceWidth = WIDTH * 1.0 / bufferLength
+    const sliceWidth = WIDTH / bufferLength
     let x = 0
     for (let i = 0; i < bufferLength; i++) {
       const v = dataArray[i] / 128.0
@@ -33,7 +43,7 @@ const makeAnalyser = (context: AudioContext, _frequency: number): AnalyserWrappe
       }
       x += sliceWidth
     }
-    ctx.lineTo(canvas.width, canvas.height / 2)
+    ctx.lineTo(WIDTH, HEIGHT / 2)
     ctx.stroke()
   }
 

@@ -206,6 +206,7 @@ export const synthView = {
   },
 
   setUpShowHide: () => {
+    const controlsStrip = document.querySelector('.controls-strip') as HTMLElement | null
     const envelope = document.querySelector('.envelope')
     const header = document.querySelector('h2')
     const oscillators = document.querySelector('.oscillator-controls')
@@ -218,21 +219,31 @@ export const synthView = {
       if (Array.from(hideButton.classList).includes('active')) {
         hideButton.classList.remove('active')
         hideButton.innerHTML = 'HIDE'
-        envelope?.classList.remove('hide')
-        oscillators?.classList.remove('hide')
-        bottomLeft?.classList.remove('hide')
-        bottomRight?.classList.remove('hide')
-        lfoSection?.classList.remove('hide')
-        header?.classList.remove('hide')
+        if (controlsStrip) {
+          controlsStrip.classList.remove('hide')
+          document.documentElement.style.removeProperty('--panel-height')
+        } else {
+          envelope?.classList.remove('hide')
+          oscillators?.classList.remove('hide')
+          bottomLeft?.classList.remove('hide')
+          bottomRight?.classList.remove('hide')
+          lfoSection?.classList.remove('hide')
+          header?.classList.remove('hide')
+        }
       } else {
         hideButton.classList.add('active')
         hideButton.innerHTML = 'SHOW'
-        envelope?.classList.add('hide')
-        bottomLeft?.classList.add('hide')
-        bottomRight?.classList.add('hide')
-        oscillators?.classList.add('hide')
-        lfoSection?.classList.add('hide')
-        header?.classList.add('hide')
+        if (controlsStrip) {
+          controlsStrip.classList.add('hide')
+          document.documentElement.style.setProperty('--panel-height', '150px')
+        } else {
+          envelope?.classList.add('hide')
+          bottomLeft?.classList.add('hide')
+          bottomRight?.classList.add('hide')
+          oscillators?.classList.add('hide')
+          lfoSection?.classList.add('hide')
+          header?.classList.add('hide')
+        }
       }
     })
   },
@@ -244,18 +255,21 @@ export const synthView = {
       preset.addEventListener('click', () => {
         switch (preset.innerHTML) {
           case '1':
-            synthView.setPreset(0, 7, 55, 10, 50, 1, 9.18, 18, 4, 12.91, 6, 5, 0, 0, 'sine', 'sine')
+            synthView.setPreset(0, 0, 100, 10, 50, 1, 22, 25, 2, 22, 0, 0, 0, 0, 'sine', 'sine')
             break
           case '2':
-            synthView.setPreset(32, 7, 55, 10, 40, 1, 16.74, 55, 3, 12.89, 3.5, 6, 6, 76, 'sawtooth', 'triangle')
+            synthView.setPreset(0, 7, 55, 10, 50, 1, 9.18, 18, 4, 12.91, 6, 5, 0, 0, 'sine', 'sine')
             break
           case '3':
-            synthView.setPreset(0, 7, 55, 10, 40, 1, 9.18, 55, 2, 12.91, 2, 2, 8.5, 84, 'triangle', 'triangle')
+            synthView.setPreset(32, 7, 55, 10, 40, 1, 16.74, 55, 3, 12.89, 3.5, 6, 6, 76, 'sawtooth', 'triangle')
             break
           case '4':
-            synthView.setPreset(0, 5, 0, 10, 40, 1, 9.18, 55, 3, 18.88, 0, 0, 0, 0, 'sawtooth', 'triangle')
+            synthView.setPreset(0, 7, 55, 10, 40, 1, 9.18, 55, 2, 12.91, 2, 2, 8.5, 84, 'triangle', 'triangle')
             break
           case '5':
+            synthView.setPreset(0, 5, 0, 10, 40, 1, 9.18, 55, 3, 18.88, 0, 0, 0, 0, 'sawtooth', 'triangle')
+            break
+          case '6':
             synthView.setPreset(24, 0, 100, 10, 40, 1, 6.62, 55, 3, 11.83, 3.5, 2, 1.5, 45, 'square', 'sawtooth')
             break
         }
@@ -292,10 +306,17 @@ export const synthView = {
   },
 
   start: () => {
+    const canvas = document.querySelector('#canvas') as HTMLCanvasElement
+    const dpr = window.devicePixelRatio || 1
+    const rect = canvas.getBoundingClientRect()
+    canvas.width = Math.round(rect.width * dpr)
+    canvas.height = Math.round(rect.height * dpr)
+
     const keys = synthView.keys
     synthView.setUpPresets()
     synthView.setUpKnobs()
     synthView.setUpOscillatorTypes()
+    ;(document.querySelector('.preset') as HTMLElement)?.click()
     requestAnimationFrame(synthView.animate)
 
     document.addEventListener('keydown', (e) => {

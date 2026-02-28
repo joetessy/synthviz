@@ -5,8 +5,6 @@ import type { Synth, KeyInfo } from './types'
 
 const makeSynth = (): Synth => {
   const canvas = document.querySelector('#canvas') as HTMLCanvasElement
-  const WIDTH = canvas.width
-  const HEIGHT = canvas.height
   const context = new AudioContext()
   const compressor = context.createDynamicsCompressor()
   compressor.threshold.value = -45
@@ -54,7 +52,7 @@ const makeSynth = (): Synth => {
     },
 
     draw: (ctx: CanvasRenderingContext2D) => {
-      ctx.clearRect(0, 0, WIDTH, HEIGHT)
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
       const voiceKeys = Object.keys(synth.activeVoices)
       voiceKeys.forEach((key) => {
         const voice = synth.activeVoices[Number(key)]
