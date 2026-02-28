@@ -211,6 +211,7 @@ export const synthView = {
     const oscillators = document.querySelector('.oscillator-controls')
     const bottomLeft = document.querySelector('.bottom-left')
     const bottomRight = document.querySelector('.bottom-right')
+    const lfoSection = document.querySelector('.lfo-section')
     const hideButton = document.querySelector('.toggle-controls') as HTMLElement
 
     hideButton.addEventListener('click', () => {
@@ -221,6 +222,7 @@ export const synthView = {
         oscillators?.classList.remove('hide')
         bottomLeft?.classList.remove('hide')
         bottomRight?.classList.remove('hide')
+        lfoSection?.classList.remove('hide')
         header?.classList.remove('hide')
       } else {
         hideButton.classList.add('active')
@@ -229,6 +231,7 @@ export const synthView = {
         bottomLeft?.classList.add('hide')
         bottomRight?.classList.add('hide')
         oscillators?.classList.add('hide')
+        lfoSection?.classList.add('hide')
         header?.classList.add('hide')
       }
     })

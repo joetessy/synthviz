@@ -15,7 +15,27 @@ npm install
 npm run build    # or: npm run dev (watch mode)
 ```
 
-Open `index.html` directly in a browser after building.
+Open `index.html` (classic UI) or `index-v2.html` (Phosphor Dark UI) directly in a browser after building.
+
+## UI Versions
+
+### Classic UI (`index.html`)
+
+The original neon interface — hot pink accents on black, PNG waveform icons.
+
+### Phosphor Dark UI (`index-v2.html`)
+
+A redesigned interface inspired by hardware synthesizers and oscilloscope phosphor displays.
+
+![SynthViz Phosphor Dark UI](./images/synthviz-v2-sine.png)
+
+- **Color scheme:** near-black background (`#080808`) with electric chartreuse (`#b4ff00`) accents
+- **Font:** DM Mono — monospace, technical, refined
+- **Layout:** visualization canvas fills the screen above a fixed control panel pinned to the bottom
+- **Keyboard:** full-width piano with active keys highlighted in chartreuse
+- **Controls:** sectioned into OSC 1, OSC 2, Envelope, Vibrato, Tremolo, Presets, and Tune modules
+- **Waveform buttons:** inline SVG wave shapes (sine, square, sawtooth, triangle) — no image files
+- **Knobs:** 52×52 canvas knobs with phosphor-green fill arc and dark track
 
 ### Computer Keyboard Mapping
 

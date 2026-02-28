@@ -22,25 +22,29 @@ const drawKnob = (canvas: HTMLCanvasElement, state: KnobState) => {
   const cy = h / 2
   const r = Math.min(w, h) / 2 - 4
 
+  const fillColor  = canvas.dataset.color      ?? '#ff00f7'
+  const trackColor = canvas.dataset.track      ?? '#333'
+  const textColor  = canvas.dataset.labelColor ?? 'white'
+
   ctx.clearRect(0, 0, w, h)
 
   ctx.beginPath()
   ctx.arc(cx, cy, r, START, START + SWEEP)
-  ctx.strokeStyle = '#333'
+  ctx.strokeStyle = trackColor
   ctx.lineWidth = 4
   ctx.stroke()
 
   if (ratio > 0) {
     ctx.beginPath()
     ctx.arc(cx, cy, r, START, START + SWEEP * ratio)
-    ctx.strokeStyle = '#ff00f7'
+    ctx.strokeStyle = fillColor
     ctx.lineWidth = 4
     ctx.stroke()
   }
 
   const decimals = state.step >= 1 ? 0 : Math.max(0, Math.ceil(-Math.log10(state.step)))
   const label = value.toFixed(decimals)
-  ctx.fillStyle = 'white'
+  ctx.fillStyle = textColor
   ctx.font = '9px sans-serif'
   ctx.textAlign = 'center'
   ctx.textBaseline = 'middle'

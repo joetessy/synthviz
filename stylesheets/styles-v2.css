@@ -1,0 +1,373 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap');
+
+:root {
+  --bg: #080808;
+  --surface: #0f0f0f;
+  --border: #1e1e1e;
+  --text: #b8b8b8;
+  --muted: #3a3a3a;
+  --accent: #b4ff00;
+  --accent-glow: rgba(180,255,0,0.12);
+  --key-white: #d0d0d0;
+  --key-black: #0e0e0e;
+  --panel-height: 295px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--bg);
+  font-family: 'DM Mono', monospace;
+  overflow: hidden;
+  color: var(--text);
+}
+
+/* ── Visualization Canvas ─────────────────────────────── */
+
+#canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: calc(100vh - var(--panel-height));
+  display: block;
+}
+
+/* ── Panel ────────────────────────────────────────────── */
+
+.panel {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--panel-height);
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Keyboard Row ─────────────────────────────────────── */
+
+.keyboard-row {
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 8px 16px 0;
+  height: 105px;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.keyboard {
+  display: flex;
+  align-items: flex-end;
+  position: relative;
+  height: 90px;
+}
+
+.white {
+  background: var(--key-white);
+  position: relative;
+  width: 24px;
+  height: 88px;
+  border: 1px solid #666;
+  border-top: none;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: background 0.05s;
+}
+
+.black {
+  background: var(--key-black);
+  position: absolute;
+  width: 15px;
+  height: 54px;
+  top: 0;
+  left: 15px;
+  z-index: 2;
+  border: 1px solid #222;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.05s;
+}
+
+.playwhite {
+  background: var(--accent) !important;
+}
+
+.playblack {
+  background: var(--accent) !important;
+}
+
+.boardkey {
+  font-size: 7px;
+  color: #888;
+  margin-bottom: 3px;
+  letter-spacing: 0;
+  user-select: none;
+}
+
+.black .boardkey {
+  color: #444;
+  font-size: 6px;
+}
+
+.playwhite .boardkey,
+.playblack .boardkey {
+  color: #000;
+}
+
+/* ── Controls Strip ───────────────────────────────────── */
+
+.controls-strip {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  padding-bottom: 6px;
+}
+
+.module {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 14px;
+  border-right: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.module:last-child {
+  border-right: none;
+}
+
+.module-label {
+  font-size: 8px;
+  letter-spacing: 0.14em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+/* ── Oscillator Modules ───────────────────────────────── */
+
+.oscillator-controls {
+  flex-direction: row;
+  gap: 0;
+  padding: 0;
+}
+
+.osc-module {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 14px;
+  border-right: 1px solid var(--border);
+}
+
+.osc-module:last-child {
+  border-right: none;
+}
+
+/* ── Wave Type Buttons ────────────────────────────────── */
+
+.wave-grid {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.osctype {
+  cursor: pointer;
+  width: 32px;
+  height: 24px;
+  border: 1px solid var(--muted);
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 2px;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.osctype svg {
+  width: 20px;
+  height: 10px;
+}
+
+.osctype:hover {
+  border-color: #666;
+  color: #666;
+}
+
+.osctype.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-glow);
+}
+
+/* ── Knob Row ─────────────────────────────────────────── */
+
+.knob-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.knob-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.knob-group span {
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.knob-group canvas {
+  cursor: ns-resize;
+  display: block;
+}
+
+/* ── Envelope Module ──────────────────────────────────── */
+
+.envelope {
+  min-width: 160px;
+}
+
+/* ── LFO Section ──────────────────────────────────────── */
+
+.lfo-section {
+  flex-direction: row;
+  gap: 0;
+  padding: 0;
+}
+
+.lfo-group {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 14px;
+  border-right: 1px solid var(--border);
+}
+
+.lfo-group:last-child {
+  border-right: none;
+}
+
+/* ── Misc Section ─────────────────────────────────────── */
+
+.misc-section {
+  flex-direction: row;
+  gap: 0;
+  padding: 0;
+  flex: 1;
+}
+
+.presets-group {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 14px;
+  border-right: 1px solid var(--border);
+}
+
+.tune-group {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 14px;
+}
+
+/* ── Preset Buttons ───────────────────────────────────── */
+
+.preset-row {
+  display: flex;
+  gap: 4px;
+}
+
+.preset {
+  cursor: pointer;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--muted);
+  color: var(--muted);
+  font-size: 10px;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 2px;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+  user-select: none;
+}
+
+.preset:hover {
+  border-color: #666;
+  color: #888;
+}
+
+.preset.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-glow);
+}
+
+/* ── Footer ───────────────────────────────────────────── */
+
+footer {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  gap: 12px;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.wordmark {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  color: var(--text);
+}
+
+.byline {
+  font-size: 9px;
+  color: var(--muted);
+  flex: 1;
+  letter-spacing: 0.05em;
+}
+
+.toggle-controls {
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 8px;
+  letter-spacing: 0.12em;
+  background: none;
+  border: 1px solid var(--muted);
+  color: var(--muted);
+  padding: 3px 8px;
+  border-radius: 2px;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.toggle-controls:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ── Hide utility ─────────────────────────────────────── */
+
+.hide {
+  display: none !important;
+}
