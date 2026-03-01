@@ -54,6 +54,7 @@ export interface AnalyserWrapper extends AudioWrapper {
 }
 
 export interface Voice {
+  id: number
   frequency: number
   context: AudioContext
   n: number
@@ -72,6 +73,7 @@ export interface Voice {
   connect: () => void
   changeFrequency: (freq: number) => void
   start: (envelope: Envelope) => void
+  retrigger: (frequency: number, glideTime: number, envelope: Envelope) => void
   stop: (releaseTime: number) => void
 }
 
@@ -81,6 +83,7 @@ export interface Synth {
   destination: AudioDestinationNode
   volume: AmpWrapper
   compressor: DynamicsCompressorNode
+  masterAnalyser: AnalyserWrapper
   tremoloAmp: AmpWrapper
   tremoloLfo: LFOWrapper
   vibratoSpeed: number
@@ -98,6 +101,9 @@ export interface Synth {
   osc1res?: number
   osc2res?: number
   envelope: Envelope
+  glide: number
+  lastFrequency: number
+  mono: boolean
   start: (key: KeyInfo) => void
   draw: (ctx: CanvasRenderingContext2D) => void
   updateFrequencies: (diff: number) => void
@@ -128,6 +134,8 @@ export interface PresetParams {
   vibratoSpeed: number; vibratoDepth: number
   tremoloSpeed: number; tremoloDepth: number
   osc1type: OscillatorType; osc2type: OscillatorType
+  glide: number
+  mono: boolean
 }
 
 export interface PresetData {

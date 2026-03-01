@@ -10,13 +10,15 @@
   --accent-glow: rgba(180,255,0,0.12);
   --key-white: #d0d0d0;
   --key-black: #0e0e0e;
-  --panel-height: 295px;
+  --panel-height: 278px;
 }
 
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 body {
@@ -134,6 +136,7 @@ body {
   display: flex;
   flex: 1;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   padding-bottom: 6px;
 }
 
@@ -182,7 +185,16 @@ body {
 .wave-grid {
   display: flex;
   gap: 4px;
-  margin-bottom: 8px;
+}
+
+.osc-module .wave-grid {
+  margin-top: 6px;
+  justify-content: space-between;
+}
+
+.osc-module .osctype {
+  flex: 1;
+  width: auto;
 }
 
 .osctype {
@@ -246,6 +258,7 @@ body {
 .knob-group canvas {
   cursor: ns-resize;
   display: block;
+  touch-action: pan-x;
 }
 
 /* ── Envelope Module ──────────────────────────────────── */
@@ -273,26 +286,45 @@ body {
   border-right: none;
 }
 
-/* ── Misc Section ─────────────────────────────────────── */
+/* ── Pitch Section (tune + glide + mono) ──────────────── */
 
-.misc-section {
-  flex-direction: row;
-  gap: 0;
-  padding: 0;
+.mono-btn {
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 8px;
+  letter-spacing: 0.12em;
+  background: none;
+  border: 1px solid var(--muted);
+  color: var(--muted);
+  padding: 2px 0;
+  border-radius: 2px;
+  width: 52px;
+  margin-top: 4px;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.mono-btn:hover {
+  border-color: #666;
+  color: #666;
+}
+
+.mono-btn.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-glow);
+}
+
+.mono-btn.dirty {
+  border-color: #ff9900;
+  color: #ff9900;
+  background: rgba(255, 153, 0, 0.12);
+}
+
+
+/* ── Presets Section ──────────────────────────────────── */
+
+.presets-section {
   flex: 1;
-}
-
-.presets-group {
-  display: flex;
-  flex-direction: column;
-  padding: 10px 14px;
-  border-right: 1px solid var(--border);
-}
-
-.tune-group {
-  display: flex;
-  flex-direction: column;
-  padding: 10px 14px;
 }
 
 /* ── Preset Buttons ───────────────────────────────────── */

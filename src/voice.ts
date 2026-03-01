@@ -20,7 +20,9 @@ const makeVoice = (
   cutoff1: number,
   cutoff2: number,
   vibratoSpeed: number,
-  vibratoDepth: number
+  vibratoDepth: number,
+  glideFrom: number,
+  glideTime: number
 ): Voice => {
   const lfoVibrato = makeLFO(context, vibratoSpeed)
   const analyser = makeAnalyser(context, frequency)
@@ -35,6 +37,7 @@ const makeVoice = (
   const filter2 = makeFilter(context, cutoff2)
 
   return {
+    id: Math.random(),
     frequency,
     context,
     n,
@@ -69,11 +72,46 @@ const makeVoice = (
       oscillator2.changeFrequency(freq)
     },
     start: (envelope: Envelope) => {
-      envelope1.envOn(envelope.attack, envelope.decay, envelope.sustain, amp1.amplitude.value)
-      envelope2.envOn(envelope.attack, envelope.decay, envelope.sustain, amp2.amplitude.value)
+      amp1.amplitude.value = 0
+      amp2.amplitude.value = 0
+      envelope1.envOn(envelope.attack, envelope.decay, envelope.sustain, vol1)
+      envelope2.envOn(envelope.attack, envelope.decay, envelope.sustain, vol2)
       oscillator1.start()
       oscillator2.start()
       lfoVibrato.start()
+      if (glideTime > 0 && glideFrom > 0) {
+        const now = context.currentTime
+        const target1 = frequency * Math.pow(2, oscillator1.oct - 1)
+        const from1 = glideFrom * Math.pow(2, oscillator1.oct - 1)
+        oscillator1.oscillator.frequency.cancelScheduledValues(now)
+        oscillator1.oscillator.frequency.setValueAtTime(from1, now)
+        oscillator1.oscillator.frequency.exponentialRampToValueAtTime(target1, now + glideTime)
+        const target2 = frequency * Math.pow(2, oscillator2.oct - 1)
+        const from2 = glideFrom * Math.pow(2, oscillator2.oct - 1)
+        oscillator2.oscillator.frequency.cancelScheduledValues(now)
+        oscillator2.oscillator.frequency.setValueAtTime(from2, now)
+        oscillator2.oscillator.frequency.exponentialRampToValueAtTime(target2, now + glideTime)
+      }
+    },
+    retrigger: (frequency: number, glideTime: number, envelope: Envelope) => {
+      const now = context.currentTime
+      const target1 = frequency * Math.pow(2, oscillator1.oct - 1)
+      const target2 = frequency * Math.pow(2, oscillator2.oct - 1)
+      if (glideTime > 0) {
+        oscillator1.oscillator.frequency.cancelScheduledValues(now)
+        oscillator1.oscillator.frequency.setValueAtTime(oscillator1.oscillator.frequency.value, now)
+        oscillator1.oscillator.frequency.exponentialRampToValueAtTime(target1, now + glideTime)
+        oscillator2.oscillator.frequency.cancelScheduledValues(now)
+        oscillator2.oscillator.frequency.setValueAtTime(oscillator2.oscillator.frequency.value, now)
+        oscillator2.oscillator.frequency.exponentialRampToValueAtTime(target2, now + glideTime)
+      } else {
+        oscillator1.oscillator.frequency.cancelScheduledValues(now)
+        oscillator1.oscillator.frequency.setValueAtTime(target1, now)
+        oscillator2.oscillator.frequency.cancelScheduledValues(now)
+        oscillator2.oscillator.frequency.setValueAtTime(target2, now)
+        envelope1.envOn(envelope.attack, envelope.decay, envelope.sustain, vol1)
+        envelope2.envOn(envelope.attack, envelope.decay, envelope.sustain, vol2)
+      }
     },
     stop: (releaseTime: number) => {
       envelope1.envOff(releaseTime)

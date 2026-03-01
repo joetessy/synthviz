@@ -73,7 +73,9 @@ export const initKnob = (
   drawKnob(canvas, state)
 
   let startY = 0
+  let startX = 0
   let startValue = 0
+  let touchIntent: 'unknown' | 'knob' | 'scroll' = 'unknown'
 
   const onMouseMove = (e: MouseEvent) => {
     const delta = startY - e.clientY
@@ -101,11 +103,22 @@ export const initKnob = (
 
   canvas.addEventListener('touchstart', (e: TouchEvent) => {
     startY = e.touches[0].clientY
+    startX = e.touches[0].clientX
     startValue = state.value
-    e.preventDefault()
-  }, { passive: false })
+    touchIntent = 'unknown'
+  }, { passive: true })
 
   canvas.addEventListener('touchmove', (e: TouchEvent) => {
+    const dx = Math.abs(e.touches[0].clientX - startX)
+    const dy = Math.abs(e.touches[0].clientY - startY)
+
+    if (touchIntent === 'unknown') {
+      touchIntent = dx > dy ? 'scroll' : 'knob'
+    }
+
+    if (touchIntent === 'scroll') return
+
+    e.preventDefault()
     const delta = startY - e.touches[0].clientY
     const range = max - min
     const newValue = Math.min(max, Math.max(min, startValue + (delta / 150) * range))
@@ -113,11 +126,11 @@ export const initKnob = (
     state.value = Math.min(max, Math.max(min, stepped))
     drawKnob(canvas, state)
     state.onChange(state.value)
-    e.preventDefault()
   }, { passive: false })
 
   canvas.addEventListener('touchend', () => {
-    state.onRelease(state.value)
+    if (touchIntent === 'knob') state.onRelease(state.value)
+    touchIntent = 'unknown'
   })
 }
 

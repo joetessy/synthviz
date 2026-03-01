@@ -139,6 +139,22 @@ export const synthView = {
     }
   },
 
+  updateMonoBtn: () => {
+    const monoBtn = document.querySelector('.mono-btn') as HTMLElement | null
+    if (!monoBtn) return
+    monoBtn.classList.remove('active', 'dirty')
+    if (synthView.activePresetId && synthView.loadedPresetParams) {
+      const presetMono = synthView.loadedPresetParams.mono ?? false
+      if (synth.mono !== presetMono) {
+        monoBtn.classList.add('dirty')
+      } else if (synth.mono) {
+        monoBtn.classList.add('active')
+      }
+    } else if (synth.mono) {
+      monoBtn.classList.add('active')
+    }
+  },
+
   // ── Knob action handler (shared between onChange and onRelease) ───────────
 
   applyKnobAction: (action: string, osc: string | undefined, v: number) => {
@@ -158,6 +174,10 @@ export const synthView = {
       case 'tune':
         synthView.increment(v)
         break
+      case 'glide':
+        synth.glide = v
+        break
+
       case 'attack':
         synth.envelope.attack = 2 * v / 100
         break
@@ -209,6 +229,7 @@ export const synthView = {
       case 'vibrato-depth': return p.vibratoDepth
       case 'tremolo-speed': return p.tremoloSpeed
       case 'tremolo-depth': return p.tremoloDepth
+      case 'glide':         return p.glide
       default:              return null
     }
   },
@@ -238,8 +259,10 @@ export const synthView = {
       Math.abs(current.vibratoDepth  - p.vibratoDepth)  < 0.001 &&
       Math.abs(current.tremoloSpeed  - p.tremoloSpeed)  < 0.001 &&
       Math.abs(current.tremoloDepth  - p.tremoloDepth)  < 0.001 &&
+      Math.abs(current.glide         - p.glide)         < 0.001 &&
       current.osc1type === p.osc1type &&
-      current.osc2type === p.osc2type
+      current.osc2type === p.osc2type &&
+      current.mono === (p.mono ?? false)
     )
 
     const activeBtn = document.querySelector(`.preset[data-preset-id="${synthView.activePresetId}"]`)
@@ -267,6 +290,7 @@ export const synthView = {
       document.querySelector('.preset-save-btn')?.classList.add('hide')
       document.querySelector('.preset-reset-btn')?.classList.add('hide')
     }
+    synthView.updateMonoBtn()
   },
 
   setUpKnobs: () => {
@@ -528,7 +552,8 @@ export const synthView = {
       p.osc2vol, p.osc2oct, p.osc2cutoff,
       p.vibratoSpeed, p.vibratoDepth,
       p.tremoloSpeed, p.tremoloDepth,
-      p.osc1type, p.osc2type
+      p.osc1type, p.osc2type,
+      p.glide ?? 0, p.mono ?? false
     )
     synthView.activePresetId = preset.id
     synthView.clearDirtyState()
@@ -549,6 +574,7 @@ export const synthView = {
     document.querySelectorAll('.preset.dirty').forEach(b => b.classList.remove('dirty'))
     // Osctype buttons: remove dirty (setPreset's .click() re-adds .active to the correct ones)
     document.querySelectorAll<HTMLElement>('.osctype.dirty').forEach(btn => btn.classList.remove('dirty'))
+    synthView.updateMonoBtn()
 
     document.querySelector('.preset-save-btn')?.classList.add('hide')
     document.querySelector('.preset-reset-btn')?.classList.add('hide')
@@ -692,7 +718,8 @@ export const synthView = {
     osc2vol: number, osc2oct: number, osc2cutoff: number,
     vibratoSpeed: number, vibratoDepth: number,
     tremoloSpeed: number, tremoloDepth: number,
-    osc1type: OscillatorType, osc2type: OscillatorType
+    osc1type: OscillatorType, osc2type: OscillatorType,
+    glide = 0, mono = false
   ) => {
     setKnobValue(getKnob('attack'), attack, true)
     setKnobValue(getKnob('decay'), decay, true)
@@ -708,6 +735,10 @@ export const synthView = {
     setKnobValue(getKnob('tremolo-depth'), tremoloDepth, true)
     setKnobValue(getKnob('vibrato-speed'), vibratoSpeed, true)
     setKnobValue(getKnob('vibrato-depth'), vibratoDepth, true)
+    setKnobValue(getKnob('glide'), glide, true)
+    synth.mono = mono
+    const monoBtn = document.querySelector('.mono-btn') as HTMLElement | null
+    if (monoBtn) monoBtn.dataset.mono = mono.toString()
     document.querySelector<HTMLElement>(`.osctype[data-type="${osc1type}"][data-osc="1"]`)?.click()
     document.querySelector<HTMLElement>(`.osctype[data-type="${osc2type}"][data-osc="2"]`)?.click()
   },
@@ -769,6 +800,23 @@ export const synthView = {
       }
     }, { passive: false } as AddEventListenerOptions)
 
+    document.addEventListener('touchmove', (e: TouchEvent) => {
+      if (touchNotes.size === 0) return
+      e.preventDefault()
+      for (const touch of Array.from(e.changedTouches)) {
+        const prev = touchNotes.get(touch.identifier)
+        if (prev === undefined) continue
+        const el = document.elementFromPoint(touch.clientX, touch.clientY)
+        const key = el?.closest('[data-key]') as HTMLElement | null
+        if (!key) continue
+        const n = parseInt((key as HTMLElement).dataset.key ?? '')
+        if (isNaN(n) || n === prev) continue
+        stopNote(prev)
+        touchNotes.set(touch.identifier, n)
+        startNote(n)
+      }
+    }, { passive: false } as AddEventListenerOptions)
+
     const endTouches = (e: Event) => {
       for (const touch of Array.from((e as TouchEvent).changedTouches)) {
         const n = touchNotes.get(touch.identifier)
@@ -792,6 +840,16 @@ export const synthView = {
     synthView.setUpKnobs()
     synthView.setUpOscillatorTypes()
     synthView.setUpKeyboard()
+
+    const monoBtn = document.querySelector('.mono-btn') as HTMLElement | null
+    if (monoBtn) {
+      monoBtn.addEventListener('click', () => {
+        synth.mono = !synth.mono
+        monoBtn.dataset.mono = synth.mono.toString()
+        synthView.updateMonoBtn()
+        synthView.recomputePresetButtonDirty()
+      })
+    }
 
     if (document.querySelector('.preset-row')) {
       // V2: load first preset programmatically

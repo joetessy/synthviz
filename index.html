@@ -146,6 +146,29 @@
         <!-- OSC 1 -->
         <div class="osc-module">
           <div class="module-label">OSC 1</div>
+          <div class="knob-row">
+            <div class="knob-group">
+              <canvas class="knob" width="52" height="52"
+                data-osc="1" data-action="oscVolume"
+                data-min="0" data-max="100" data-step="1" data-value="50"
+                data-color="#b4ff00" data-track="#1c1c1c" data-label-color="#5a5a5a"></canvas>
+              <span>Vol</span>
+            </div>
+            <div class="knob-group">
+              <canvas class="knob" width="52" height="52"
+                data-osc="1" data-action="octave"
+                data-min="1" data-max="4" data-step="1" data-value="1"
+                data-color="#b4ff00" data-track="#1c1c1c" data-label-color="#5a5a5a"></canvas>
+              <span>Oct</span>
+            </div>
+            <div class="knob-group">
+              <canvas class="knob" width="52" height="52"
+                data-osc="1" data-action="cutoff"
+                data-min="0" data-max="22" data-step="0.01" data-value="22"
+                data-color="#b4ff00" data-track="#1c1c1c" data-label-color="#5a5a5a"></canvas>
+              <span>Cut</span>
+            </div>
+          </div>
           <div class="wave-grid">
             <div class="osctype active" data-type="sine" data-osc="1" title="Sine">
               <svg viewBox="0 0 24 12" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -172,34 +195,34 @@
               </svg>
             </div>
           </div>
-          <div class="knob-row">
-            <div class="knob-group">
-              <canvas class="knob" width="52" height="52"
-                data-osc="1" data-action="oscVolume"
-                data-min="0" data-max="100" data-step="1" data-value="50"
-                data-color="#b4ff00" data-track="#1c1c1c" data-label-color="#5a5a5a"></canvas>
-              <span>Vol</span>
-            </div>
-            <div class="knob-group">
-              <canvas class="knob" width="52" height="52"
-                data-osc="1" data-action="octave"
-                data-min="1" data-max="4" data-step="1" data-value="1"
-                data-color="#b4ff00" data-track="#1c1c1c" data-label-color="#5a5a5a"></canvas>
-              <span>Oct</span>
-            </div>
-            <div class="knob-group">
-              <canvas class="knob" width="52" height="52"
-                data-osc="1" data-action="cutoff"
-                data-min="0" data-max="22" data-step="0.01" data-value="22"
-                data-color="#b4ff00" data-track="#1c1c1c" data-label-color="#5a5a5a"></canvas>
-              <span>Cut</span>
-            </div>
-          </div>
         </div>
 
         <!-- OSC 2 -->
         <div class="osc-module">
           <div class="module-label">OSC 2</div>
+          <div class="knob-row">
+            <div class="knob-group">
+              <canvas class="knob" width="52" height="52"
+                data-osc="2" data-action="oscVolume"
+                data-min="0" data-max="100" data-step="1" data-value="25"
+                data-color="#b4ff00" data-track="#1c1c1c" data-label-color="#5a5a5a"></canvas>
+              <span>Vol</span>
+            </div>
+            <div class="knob-group">
+              <canvas class="knob" width="52" height="52"
+                data-osc="2" data-action="octave"
+                data-min="1" data-max="4" data-step="1" data-value="2"
+                data-color="#b4ff00" data-track="#1c1c1c" data-label-color="#5a5a5a"></canvas>
+              <span>Oct</span>
+            </div>
+            <div class="knob-group">
+              <canvas class="knob" width="52" height="52"
+                data-osc="2" data-action="cutoff"
+                data-min="0" data-max="22" data-step="0.01" data-value="22"
+                data-color="#b4ff00" data-track="#1c1c1c" data-label-color="#5a5a5a"></canvas>
+              <span>Cut</span>
+            </div>
+          </div>
           <div class="wave-grid">
             <div class="osctype active" data-type="sine" data-osc="2" title="Sine">
               <svg viewBox="0 0 24 12" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -224,29 +247,6 @@
                 <path d="M0,6 L4,2 L8,10 L12,2 L16,10 L20,2 L24,6"
                       stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
-            </div>
-          </div>
-          <div class="knob-row">
-            <div class="knob-group">
-              <canvas class="knob" width="52" height="52"
-                data-osc="2" data-action="oscVolume"
-                data-min="0" data-max="100" data-step="1" data-value="25"
-                data-color="#b4ff00" data-track="#1c1c1c" data-label-color="#5a5a5a"></canvas>
-              <span>Vol</span>
-            </div>
-            <div class="knob-group">
-              <canvas class="knob" width="52" height="52"
-                data-osc="2" data-action="octave"
-                data-min="1" data-max="4" data-step="1" data-value="2"
-                data-color="#b4ff00" data-track="#1c1c1c" data-label-color="#5a5a5a"></canvas>
-              <span>Oct</span>
-            </div>
-            <div class="knob-group">
-              <canvas class="knob" width="52" height="52"
-                data-osc="2" data-action="cutoff"
-                data-min="0" data-max="22" data-step="0.01" data-value="22"
-                data-color="#b4ff00" data-track="#1c1c1c" data-label-color="#5a5a5a"></canvas>
-              <span>Cut</span>
             </div>
           </div>
         </div>
@@ -333,23 +333,10 @@
 
       </section>
 
-      <!-- PRESETS + TUNE -->
-      <section class="module misc-section">
-
-        <div class="bottom-left presets-group">
-          <div class="module-label">PRESETS</div>
-          <div class="preset-row">
-            <div class="preset-row-builtin"></div>
-            <div class="preset-row-user"></div>
-          </div>
-          <div class="preset-actions">
-            <button class="preset-save-btn hide">SAVE</button>
-            <button class="preset-reset-btn hide">RESET</button>
-          </div>
-        </div>
-
-        <div class="bottom-right tune-group">
-          <div class="module-label">TUNE</div>
+      <!-- PITCH (TUNE + GLIDE + MONO) -->
+      <section class="module pitch-section">
+        <div class="module-label">PITCH</div>
+        <div class="knob-row">
           <div class="knob-group">
             <canvas class="knob" width="52" height="52"
               data-action="tune"
@@ -357,8 +344,28 @@
               data-color="#b4ff00" data-track="#1c1c1c" data-label-color="#5a5a5a"></canvas>
             <span>Semi</span>
           </div>
+          <div class="knob-group">
+            <canvas class="knob" width="52" height="52"
+              data-action="glide"
+              data-min="0" data-max="1" data-step="0.01" data-value="0"
+              data-color="#b4ff00" data-track="#1c1c1c" data-label-color="#5a5a5a"></canvas>
+            <span>Glide</span>
+            <button class="mono-btn" data-mono="false">MONO</button>
+          </div>
         </div>
+      </section>
 
+      <!-- PRESETS -->
+      <section class="module presets-section">
+        <div class="module-label">PRESETS</div>
+        <div class="preset-row">
+          <div class="preset-row-builtin"></div>
+          <div class="preset-row-user"></div>
+        </div>
+        <div class="preset-actions">
+          <button class="preset-save-btn hide">SAVE</button>
+          <button class="preset-reset-btn hide">RESET</button>
+        </div>
       </section>
 
     </div>
