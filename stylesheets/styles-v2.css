@@ -503,7 +503,6 @@ footer {
 .byline {
   font-size: 9px;
   color: var(--muted);
-  flex: 1;
   letter-spacing: 0.05em;
 }
 
