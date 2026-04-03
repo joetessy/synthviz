@@ -42,6 +42,13 @@ export interface FilterWrapper extends AudioWrapper {
   changeFilter: (freq: number) => void
 }
 
+export interface VCFWrapper extends AudioWrapper {
+  filter: BiquadFilterNode
+  cutoffParam: AudioParam
+  changeCutoff: (freqHz: number) => void
+  changeResonance: (q: number) => void
+}
+
 export interface EnvelopeController {
   envOn: (attack: number, decay: number, sustain: number, amplitude: number) => void
   envOff: (releaseTime: number) => void
@@ -100,6 +107,11 @@ export interface Synth {
   osc2oct: number
   osc1res?: number
   osc2res?: number
+  masterVCF: VCFWrapper
+  masterVcfCutoff: number
+  masterVcfResonance: number
+  masterVcfLfoSpeed: number
+  masterVcfLfoDepth: number
   envelope: Envelope
   glide: number
   lastFrequency: number
@@ -111,6 +123,9 @@ export interface Synth {
   changeOscVolume: (vol: number, osc: number) => void
   changeOctave: (octave: number, osc: number) => void
   changeCutoff: (freq: number, res: number | undefined, osc: number) => void
+  changeMasterVCF: (cutoffKhz: number, resonance: number) => void
+  changeMasterVcfLFO: (value: number, control: string) => void
+  updateVcfLfo: (time: number) => void
   changeType: (type: OscillatorType, osc: string) => void
   stop: (n: number) => void
   handleOctaveChange: (n: number) => number
@@ -136,6 +151,8 @@ export interface PresetParams {
   osc1type: OscillatorType; osc2type: OscillatorType
   glide: number
   mono: boolean
+  masterVcfCutoff: number; masterVcfResonance: number
+  masterVcfLfoSpeed: number; masterVcfLfoDepth: number
 }
 
 export interface PresetData {

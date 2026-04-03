@@ -36,6 +36,7 @@ export const synthView = {
 
   animate: (time: number) => {
     synthView.synth.draw(synthView.ctx)
+    synthView.synth.updateVcfLfo(synthView.synth.context.currentTime)
     synthView.lastTime = time
     requestAnimationFrame(synthView.animate)
   },
@@ -211,6 +212,18 @@ export const synthView = {
           synth.changeCutoff(v, synth.osc2res, 2)
         }
         break
+      case 'vcf-cutoff':
+        synth.changeMasterVCF(v, synth.masterVcfResonance)
+        break
+      case 'vcf-resonance':
+        synth.changeMasterVCF(synth.masterVcfCutoff, v)
+        break
+      case 'vcf-lfo-speed':
+        synth.changeMasterVcfLFO(v, 'speed')
+        break
+      case 'vcf-lfo-depth':
+        synth.changeMasterVcfLFO(v, 'depth')
+        break
     }
   },
 
@@ -227,10 +240,14 @@ export const synthView = {
       case 'cutoff':        return osc === '1' ? p.osc1cutoff : p.osc2cutoff
       case 'vibrato-speed': return p.vibratoSpeed
       case 'vibrato-depth': return p.vibratoDepth
-      case 'tremolo-speed': return p.tremoloSpeed
-      case 'tremolo-depth': return p.tremoloDepth
-      case 'glide':         return p.glide
-      default:              return null
+      case 'tremolo-speed':   return p.tremoloSpeed
+      case 'tremolo-depth':   return p.tremoloDepth
+      case 'glide':           return p.glide
+      case 'vcf-cutoff':      return p.masterVcfCutoff
+      case 'vcf-resonance':   return p.masterVcfResonance
+      case 'vcf-lfo-speed':   return p.masterVcfLfoSpeed
+      case 'vcf-lfo-depth':   return p.masterVcfLfoDepth
+      default:                return null
     }
   },
 
@@ -259,7 +276,11 @@ export const synthView = {
       Math.abs(current.vibratoDepth  - p.vibratoDepth)  < 0.001 &&
       Math.abs(current.tremoloSpeed  - p.tremoloSpeed)  < 0.001 &&
       Math.abs(current.tremoloDepth  - p.tremoloDepth)  < 0.001 &&
-      Math.abs(current.glide         - p.glide)         < 0.001 &&
+      Math.abs(current.glide              - p.glide)              < 0.001 &&
+      Math.abs(current.masterVcfCutoff    - p.masterVcfCutoff)    < 0.001 &&
+      Math.abs(current.masterVcfResonance - p.masterVcfResonance) < 0.001 &&
+      Math.abs(current.masterVcfLfoSpeed  - p.masterVcfLfoSpeed)  < 0.001 &&
+      Math.abs(current.masterVcfLfoDepth  - p.masterVcfLfoDepth)  < 0.001 &&
       current.osc1type === p.osc1type &&
       current.osc2type === p.osc2type &&
       current.mono === (p.mono ?? false)
@@ -555,6 +576,14 @@ export const synthView = {
       p.osc1type, p.osc2type,
       p.glide ?? 0, p.mono ?? false
     )
+    const vcfCutoff = p.masterVcfCutoff ?? 22
+    const vcfRes = p.masterVcfResonance ?? 1
+    const vcfLfoSpeed = p.masterVcfLfoSpeed ?? 0
+    const vcfLfoDepth = p.masterVcfLfoDepth ?? 0
+    setKnobValue(getKnob('vcf-cutoff'), vcfCutoff, true)
+    setKnobValue(getKnob('vcf-resonance'), vcfRes, true)
+    setKnobValue(getKnob('vcf-lfo-speed'), vcfLfoSpeed, true)
+    setKnobValue(getKnob('vcf-lfo-depth'), vcfLfoDepth, true)
     synthView.activePresetId = preset.id
     synthView.clearDirtyState()
   },
@@ -750,8 +779,8 @@ export const synthView = {
     let mouseNote: number | null = null
     const touchNotes = new Map<number, number>()
 
-    const startNote = (n: number) => {
-      synth.context.resume()
+    const startNote = async (n: number) => {
+      await synth.context.resume()
       synth.start({ n, down: false, action: () => {} })
       synthView.pushKey(n)
     }
@@ -860,12 +889,12 @@ export const synthView = {
 
     requestAnimationFrame(synthView.animate)
 
-    document.addEventListener('keydown', (e) => {
-      synthView.synth.context.resume()
+    document.addEventListener('keydown', async (e) => {
       const keyInfo = keys[e.keyCode]
       if (keyInfo) {
         if (keyInfo.down) return
         keyInfo.down = true
+        await synthView.synth.context.resume()
         keyInfo.action(keyInfo)
       }
     })
@@ -888,10 +917,5 @@ export const synthView = {
       }
     })
 
-    synthView.synth.tremoloLfo.connect(synthView.synth.tremoloAmp)
-    synthView.synth.tremoloAmp.connect(synthView.synth.volume.gain.gain)
-    synthView.synth.volume.connect(synthView.synth.compressor)
-    synthView.synth.compressor.connect(synthView.synth.context.destination)
-    synthView.synth.tremoloLfo.start()
   }
 }

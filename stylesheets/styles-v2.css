@@ -504,6 +504,8 @@ footer {
   font-size: 9px;
   color: var(--muted);
   letter-spacing: 0.05em;
+  text-decoration: none;
+  cursor: pointer;
 }
 
 .toggle-controls {
