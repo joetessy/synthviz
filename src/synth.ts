@@ -2,6 +2,7 @@ import makeVoice from './voice'
 import makeAmp from './audio/amp'
 import makeLFO from './audio/lfo'
 import makeAnalyser from './audio/analyser'
+import makeVCF from './audio/vcf'
 import type { Synth, KeyInfo, Voice } from './types'
 
 const makeSynth = (): Synth => {
@@ -10,18 +11,20 @@ const makeSynth = (): Synth => {
   const canvas = document.querySelector('#canvas') as HTMLCanvasElement
   const context = new AudioContext()
   const compressor = context.createDynamicsCompressor()
-  compressor.threshold.value = -45
-  compressor.knee.value = 40
-  compressor.ratio.value = 12
-  compressor.attack.value = 0.25
-  compressor.release.value = 0.25
+  compressor.threshold.value = -24
+  compressor.knee.value = 6
+  compressor.ratio.value = 20
+  compressor.attack.value = 0.003
+  compressor.release.value = 0.1
   const volume = makeAmp(context)
+  const masterVCF = makeVCF(context, 22000, 1)
   const masterAnalyser = makeAnalyser(context, 440)
   const tremoloAmp = makeAmp(context, 0)
   const tremoloLfo = makeLFO(context, 0)
 
-  // Signal chain: volume → masterAnalyser → compressor → destination
-  volume.connect(masterAnalyser)
+  // Signal chain: volume → masterVCF → masterAnalyser → compressor → destination
+  volume.connect(masterVCF)
+  masterVCF.connect(masterAnalyser)
   masterAnalyser.connect(compressor)
   compressor.connect(context.destination)
 
@@ -39,10 +42,15 @@ const makeSynth = (): Synth => {
     masterAnalyser,
     tremoloAmp,
     tremoloLfo,
+    masterVCF,
     vibratoSpeed: 0,
     vibratoDepth: 0,
     tremoloSpeed: 0,
     tremoloDepth: 0,
+    masterVcfCutoff: 22,
+    masterVcfResonance: 1,
+    masterVcfLfoSpeed: 0,
+    masterVcfLfoDepth: 0,
     osc1type: 'sine',
     osc2type: 'sine',
     osc1cutoff: 22,
@@ -201,6 +209,55 @@ const makeSynth = (): Synth => {
           synth.activeVoices[Number(voiceKeys[i])].filter1.changeFilter(freq)
         } else {
           synth.activeVoices[Number(voiceKeys[i])].filter2.changeFilter(freq)
+        }
+      }
+    },
+
+    changeMasterVCF: (cutoffKhz: number, resonance: number) => {
+      synth.masterVcfCutoff = cutoffKhz
+      synth.masterVcfResonance = resonance
+      synth.masterVCF.changeCutoff(cutoffKhz * 1000)
+      synth.masterVCF.changeResonance(resonance)
+    },
+
+    changeMasterVcfLFO: (value: number, control: string) => {
+      if (control === 'speed') {
+        synth.masterVcfLfoSpeed = value
+      } else {
+        synth.masterVcfLfoDepth = value
+      }
+    },
+
+    updateVcfLfo: (_time: number) => {
+      const now = synth.context.currentTime
+      const speed = synth.masterVcfLfoSpeed
+      const depthHz = synth.masterVcfLfoDepth * 1000
+      const cutoffHz = synth.masterVcfCutoff * 1000
+      const freqParam = synth.masterVCF.filter.frequency
+
+      if (speed === 0 || depthHz === 0) {
+        freqParam.cancelScheduledValues(now)
+        freqParam.setValueAtTime(cutoffHz, now)
+        return
+      }
+
+      // Schedule 16 fine steps over the next 2 animation frames (~33ms).
+      // Using linearRampToValueAtTime between each step creates a smooth sine
+      // approximation in the audio scheduler, avoiding the hard jumps that
+      // excite a high-Q resonant peak.
+      const lookAhead = 1 / 30
+      const numSteps = 16
+      const dt = lookAhead / numSteps
+
+      freqParam.cancelScheduledValues(now)
+      for (let i = 0; i <= numSteps; i++) {
+        const t = now + i * dt
+        const lfo = Math.sin(2 * Math.PI * speed * t)
+        const freq = Math.max(80, Math.min(22000, cutoffHz + lfo * depthHz))
+        if (i === 0) {
+          freqParam.setValueAtTime(freq, t)
+        } else {
+          freqParam.linearRampToValueAtTime(freq, t)
         }
       }
     },

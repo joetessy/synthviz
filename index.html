@@ -288,6 +288,41 @@
         </div>
       </section>
 
+      <!-- VCF -->
+      <section class="module vcf-section">
+        <div class="module-label">VCF</div>
+        <div class="knob-row">
+          <div class="knob-group">
+            <canvas class="knob" width="52" height="52"
+              data-action="vcf-cutoff"
+              data-min="0" data-max="22" data-step="0.1" data-value="22"
+              data-color="#b4ff00" data-track="#1c1c1c" data-label-color="#5a5a5a"></canvas>
+            <span>Cut</span>
+          </div>
+          <div class="knob-group">
+            <canvas class="knob" width="52" height="52"
+              data-action="vcf-resonance"
+              data-min="0.1" data-max="20" data-step="0.1" data-value="1"
+              data-color="#b4ff00" data-track="#1c1c1c" data-label-color="#5a5a5a"></canvas>
+            <span>Res</span>
+          </div>
+          <div class="knob-group">
+            <canvas class="knob" width="52" height="52"
+              data-action="vcf-lfo-speed"
+              data-min="0" data-max="10" data-step="0.5" data-value="0"
+              data-color="#b4ff00" data-track="#1c1c1c" data-label-color="#5a5a5a"></canvas>
+            <span>Spd</span>
+          </div>
+          <div class="knob-group">
+            <canvas class="knob" width="52" height="52"
+              data-action="vcf-lfo-depth"
+              data-min="0" data-max="10" data-step="0.5" data-value="0"
+              data-color="#b4ff00" data-track="#1c1c1c" data-label-color="#5a5a5a"></canvas>
+            <span>Dpt</span>
+          </div>
+        </div>
+      </section>
+
       <!-- VIBRATO + TREMOLO -->
       <section class="module lfo-section">
 
@@ -373,7 +408,7 @@
     <!-- ── Footer ────────────────────────────────────── -->
     <footer>
       <h2 class="wordmark">SYNTHVIZ</h2>
-      <span class="byline">by Joe Tessy</span>
+      <a class="byline" href="https://www.joetessy.com" target="_blank" rel="noopener">by Joe Tessy</a>
       <a class="contact-link" href="https://ko-fi.com/joetessy" target="_blank" rel="noopener" style="color: #b4ff00;">support ♥</a>
       <span style="flex: 1"></span>
       <a class="contact-link" href="mailto:josephctessy@gmail.com">contact</a>
